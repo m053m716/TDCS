@@ -16,17 +16,7 @@ function [SpikeData,F] = LoadSpikeSummaries(varargin)
 %        * 'MIN_SIZE' : 200000 (Min summary file size; bytes)
 
 % DEFAULT CONSTANTS
-switch nargin
-   case 0
-      pars = defs.Spikes();
-   case 1
-      pars = varargin{1};
-   otherwise
-      pars = defs.Spikes();
-      for iV = 1:2:numel(varargin)
-         pars.(upper(varargin{iV})) = varargin{iV+1};
-      end
-end
+pars = parseParameters('Spikes',varargin{:});
 
 % INITIALIZE
 if isfield(pars,'F')

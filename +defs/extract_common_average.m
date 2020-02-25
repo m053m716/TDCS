@@ -1,21 +1,17 @@
-function varargout = FileNames(varargin)
-%FILENAMES  Names of various files saved on KUMC server
+function varargout = extract_common_average(varargin)
+%EXTRACT_COMMON_AVERAGE   Pars for `extract_common_average` function
 %
-%  pars = defs.FileNames();
-%  [var1,var2,...] = defs.SpikeStats('var1Name','var2Name',...);
+%  pars = defs.extract_common_average();
+%  [var1,var2,...] = defs.extract_common_average('var1','var2',...);
 
 pars = struct;
 % DEFAULTS
-pars.DIR = 'P:\Rat\tDCS';
-pars.RATE_CHANGES = '2017-07-18_Rate Changes.mat';
-pars.WORKSPACE = '2017-07-20_tDCS Workspace.mat';
-pars.SPIKE_SERIES = '2017-11-22_Updated Spike Series.mat';
-pars.LFP = '2017-07-13_LFP Data.mat';
-pars.DATA_STRUCTURE = '2017 TDCS Data Structure Organization.mat';
-pars.EPOCH_DATA = '2017-06-17_Concatenated Epoch Data.mat';
-
-% SPECIFIC FILES
-pars.RMS_MASK_FILE = '%s_RMS-Mask.mat';
+% Folder identifiers
+pars.INFILE_TYPE_TAG = '_Filtered'; % Input file "type" tag/identifier
+pars.OUTFILE_TYPE_TAG = '_FilteredCAR'; % Output file "type" tag/identifier
+pars.INFILE_CHANNEL_TOKEN = '_Ch_'; % Input file channel token indicator; truncates output name before this
+pars.INFILE_DELIM = '_Filt_'; % Part that allows recovery of "block" name
+pars.OUTFILE_DELIM = '_REF_'; % This will replace INFILE_DELIM in output name
 
 if nargin < 1
    varargout = {pars};   

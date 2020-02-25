@@ -26,22 +26,18 @@ function [s,n] = SlidingPower(x,varargin)
 % See also: SIMPLE_LFP_ANALYSIS, BANDPOWER
 
 % DEFAULTS
-pars = struct('WLEN',5001,'OV',0.5);
-
-% PARSE VARARGIN
-for iV = 1:2:numel(varargin)
-    pars.(upper(varargin{iV})) = varargin{iV+1};
-end
+pars = parseParameters('SlidingPower',varargin{:});
 
 if rem(pars.WLEN,2)==0
-   error('pars.WLEN must be Odd');
+   error(['TDCS:' mfilename ':BadParam'],...
+      'pars.WLEN must be odd (current value: %g)\n',pars.WLEN);
 end
 
 N = numel(x);
 
 % GET SLIDING POWER VALUES
 w = -floor(pars.WLEN/2):floor(pars.WLEN/2);
-nSkip = (pars.WLEN-1)*pars.OV;
+nSkip = min(max((pars.WLEN-1)*(1 - pars.OV),1),pars.WLEN);
 n = ceil(pars.WLEN/2):nSkip:(N-floor(pars.WLEN/2));
 s = nan(size(n));
 for i = 1:numel(n)

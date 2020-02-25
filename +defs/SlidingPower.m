@@ -1,21 +1,13 @@
-function varargout = FileNames(varargin)
-%FILENAMES  Names of various files saved on KUMC server
+function varargout = SlidingPower(varargin)
+%MAKE_RMS_MASK  Pars for `SlidingPower` function
 %
-%  pars = defs.FileNames();
-%  [var1,var2,...] = defs.SpikeStats('var1Name','var2Name',...);
+%  pars = defs.SlidingPower();
+%  [var1,var2,...] = defs.SlidingPower('var1Name','var2Name',...);
 
 pars = struct;
 % DEFAULTS
-pars.DIR = 'P:\Rat\tDCS';
-pars.RATE_CHANGES = '2017-07-18_Rate Changes.mat';
-pars.WORKSPACE = '2017-07-20_tDCS Workspace.mat';
-pars.SPIKE_SERIES = '2017-11-22_Updated Spike Series.mat';
-pars.LFP = '2017-07-13_LFP Data.mat';
-pars.DATA_STRUCTURE = '2017 TDCS Data Structure Organization.mat';
-pars.EPOCH_DATA = '2017-06-17_Concatenated Epoch Data.mat';
-
-% SPECIFIC FILES
-pars.RMS_MASK_FILE = '%s_RMS-Mask.mat';
+pars.WLEN = 1001;
+pars.OV = 0;
 
 if nargin < 1
    varargout = {pars};   
