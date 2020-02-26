@@ -7,8 +7,8 @@ function c = EpochColors(varargin)
 %  * each row is matched to an input arg
 
 C_KEY = struct(...
-   'BASAL',[0.25 0.25 0.25],... % grey
-   'STIM',[0.80 0.25 0.15],... % red
+   'BASAL',[0.25 0.25 0.25],...  % grey
+   'STIM',[0.80 0.25 0.15],...   % red
    'POST1',[0.30 0.30 1.00], ... % blue (lightest)
    'POST2',[0.20 0.20 0.95], ... % blue
    'POST3',[0.10 0.10 0.90], ... % blue

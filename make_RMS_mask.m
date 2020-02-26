@@ -91,13 +91,20 @@ if offsets(end) < onsets(end)
    offsets = [offsets, numel(s)];
 end
 
-art_ts = [t(n(onsets)); t(n(offsets))];
+d_onset = 0.5 * (pars.RMS.WLEN-1)/fs;
+d_offset = 0.5 * (pars.RMS.WLEN-1)/fs;
+art_ts = [t(n(onsets)) - d_onset; t(n(offsets)) + d_offset];
+
+
 artifact = round(art_ts .* FS); % Switch it to sample indices
+artifact(artifact <= 0) = 1;
 if artifact(1,1) == artifact(2,1)
    artifact(1,1) = 1;
 end
+nmax = size(m,'data',2); %#ok<GTARG>
+artifact(artifact > nmax) = nmax;
 if artifact(1,end) == artifact(2,end)
-   artifact(2,end) = size(m,'data',2);
+   artifact(2,end) = nmax;
 end
 fprintf(1,'saving...\n');
 save(fullfile(block,output),'s','n','mask','artifact','-v7.3');

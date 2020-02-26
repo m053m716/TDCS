@@ -10,7 +10,7 @@ function [s,n] = SlidingPower(x,varargin)
 %
 %   varargin    :       (Optional) 'NAME', value input argument pairs
 %
-%                       -> 'WLEN' : (Default: 1000) Number of samples in
+%                       -> 'WLEN' : (Default: 1001) Number of samples in
 %                                   sliding window
 %                       -> 'OV'   : (Default: 0.5) Fraction [0 to 1] of
 %                                   overlap for each consecutive window.

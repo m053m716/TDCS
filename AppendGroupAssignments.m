@@ -4,19 +4,7 @@ function AppendedSpikeData = AppendGroupAssignments(SpikeData,varargin)
 %   AppendedSpikeData = APPENDGROUPASSIGNMENTS(SpikeData,'NAME',value,...)
 
 % DEFAULT CONSTANTS
-switch nargin
-   case 0
-      error('Too few input arguments.');
-   case 1
-      pars = defs.Spikes();
-   case 2
-      pars = varargin{1};
-   otherwise
-      pars = defs.Spikes();
-      for iV = 1:2:numel(varargin)
-         pars.(upper(varargin{iV})) = varargin{iV+1};
-      end
-end
+pars = parseParameters('Spikes',varargin{:});
 
 % INITIALIZE
 load(fullfile(pars.DIR,pars.ASSIGNMENT_FILE),'Assignment');

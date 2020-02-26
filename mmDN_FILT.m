@@ -1,5 +1,5 @@
 function data_out = mmDN_FILT(data_in,fs,pars)
-%% MMDN_FILT    De-noise and filter data
+%MMDN_FILT    De-noise and filter data
 %
 %   data_out = mmDN_FILT(data_in,fs,pars);
 %
@@ -34,11 +34,9 @@ function data_out = mmDN_FILT(data_in,fs,pars)
 %   --------
 %   data_out    :   1 x N vector of de-noised and filtered data.
 %
-% By: Max Murphy    v1.0    08/15/2017  Original version (R2017a)
-%
 %   See also: MMMEMFREQ
 
-%% REMOVE NOISE AND FILTER
+% REMOVE NOISE AND FILTER
 data_out = double(data_in); clear data_in;
 data_out(pars.NOISE) = [];
 

@@ -7,6 +7,9 @@ function varargout = FileNames(varargin)
 pars = struct;
 % DEFAULTS
 pars.DIR = 'P:\Rat\tDCS';
+pars.OUTPUT_FIG_DIR = 'J:\Rat\tDCS\2020_Figures';
+pars.OUTPUT_STATS_DIR_CSV = 'J:\Rat\tDCS\2020_Stats';
+pars.OUTPUT_STATS_DIR_MAT = fullfile(pars.OUTPUT_STATS_DIR_CSV,'_mat');
 pars.RATE_CHANGES = '2017-07-18_Rate Changes.mat';
 pars.WORKSPACE = '2017-07-20_tDCS Workspace.mat';
 pars.SPIKE_SERIES = '2017-11-22_Updated Spike Series.mat';
@@ -16,6 +19,8 @@ pars.EPOCH_DATA = '2017-06-17_Concatenated Epoch Data.mat';
 
 % SPECIFIC FILES
 pars.RMS_MASK_FILE = '%s_RMS-Mask.mat';
+pars.LFP_FILE = '%s_LFP.mat';
+pars.LFP_STATS_FILE = 'LFP_BandPower_Stats';
 
 if nargin < 1
    varargout = {pars};   
