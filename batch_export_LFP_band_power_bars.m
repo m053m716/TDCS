@@ -1,7 +1,6 @@
-if exist('F','var')==0
-   load(fullfile(defs.FileNames('DIR'),defs.FileNames('DATA_STRUCTURE')),'F');
-end
-F = F([F.included] & ~isnan([F.animalID]) & ~isnan([F.conditionID]));
+% Export LFP band power 3D bar graph figures
+clear; clc;
+F = loadOrganizationData();
 
 %% Export by session
 for iF = 1:numel(F)

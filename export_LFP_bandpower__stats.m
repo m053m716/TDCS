@@ -1,4 +1,4 @@
-function export_LFP_bandpower__stats(F,varargin)
+function T = export_LFP_bandpower__stats(F,varargin)
 %EXPORT_LFP_BANDPOWER__GROUPED  Extract LFP (band) RMS 
 %
 %  T = EXPORT_LFP_BANDPOWER__GROUPED(F);
@@ -12,7 +12,7 @@ function export_LFP_bandpower__stats(F,varargin)
 %     --> Updates fields of `pars` using 'NAME',value,... syntax
 %
 %  -- outputs --
-%  T : Table of stats data that is exported to `pars.OUTPUT_STATS_DIR`
+%  T : Table of stats data that is exported to SQL database
 
 % Iterate on all elements of "organization" struct array
 if numel(F) > 1
@@ -20,11 +20,13 @@ if numel(F) > 1
    F = F([F.included] & ~isnan([F.animalID]) & ~isnan([F.conditionID]));
    
    if nargout > 0
-      P = cell(size(F));
+      T = struct('id',[],'key',[]);
    end
    for i = 1:numel(F)
       if nargout > 0
-         P{i} = export_LFP_bandpower__stats(F(i),varargin{:});
+         tmp = export_LFP_bandpower__stats(F(i),varargin{:}); 
+         T.id = [T.id; tmp.id];
+         T.key = [T.key; tmp.key];
       else
          export_LFP_bandpower__stats(F(i),varargin{:});
       end
@@ -74,7 +76,7 @@ ps_ = log(ps(:,~rmsdata.mask)); % Remove mask samples here (do not save version 
 t_ = t(1,~rmsdata.mask)./60; % Convert to minutes for comparison purposes
 
 P = struct;
-E = numel(pars.EPOCH_NAMES);
+nEpoch = numel(pars.EPOCH_NAMES);
 
 vec = (1:(size(ps_,2)-pars.NSAMPLES_COV+1)).';
 vec = vec + (0:(pars.NSAMPLES_COV-1));
@@ -82,64 +84,129 @@ iOffset = floor(pars.NSAMPLES_COV/2);
 iZ = ceil(pars.NSAMPLES_COV/2);
 
 % Truncate t_ by amount that ps_ will be truncated
-t_ = t_(iZ:(end-iOffset));
+t_z = t_(iZ:(end-iOffset));
 nBand = numel(pars.BANDS);
+nBin = pars.N_BIN_PER_EPOCH;
 
-for i = 1:numel(pars.BANDS)
+BandID   = nan(nBand*nEpoch,1);
+EpochID  = nan(nBand*nEpoch,1);
+AnimalID = ones(nBand*nEpoch,1).*F.animalID;
+ConditionID = ones(nBand*nEpoch,1).*F.conditionID;
+% AnimalID = repmat({sprintf('R-TDCS-%g',F.animalID)},nBand*nEpoch,1);
+% c = defs.Experiment('NAME_KEY');
+% ConditionID = repmat(c(F.conditionID),nBand*nEpoch,1);
+TZ = nan(nBand*nEpoch,nBin);
+TP = nan(nBand*nEpoch,nBin);
+TT = (1:nBin).'; % Indexing vector to write
+
+
+tmpID = struct;
+tmpID = table(AnimalID,ConditionID,BandID,EpochID);
+
+conn = database(defs.FileNames('DATABASE'),'dbo','');
+if ~isempty(conn.Message)
+   error(['TDCS:' mfilename ':BadDatabase'],...
+      'Failed to connect to database');
+end
+
+dbNames = defs.FileNames('DATABASE_LFP');
+lfp_id_db_tab = dbNames.Atomic;
+col_id = {'AnimalID','ConditionID','BandID','EpochID'};
+lfp_key_db_tab = dbNames.Key;
+col_key = {'AnimalID','ConditionID','BandID','EpochID','T','P','Z'};
+
+iTable = 0;
+
+tmpKey = [];
+for i = 1:nBand
+   bandName = pars.BANDS{i};
    fc = pars.FC.(pars.BANDS{i});
    f_idx = (f>=fc(1)) & (f<=fc(2));
-   P.(pars.BANDS{i}) = struct;
-   P.(pars.BANDS{i}).f  = f(f_idx);
-   P.(pars.BANDS{i}).mu = nan(1,E);
-   P.(pars.BANDS{i}).sd = nan(1,E);
-   P.(pars.BANDS{i}).mu_z = nan(1,E);
-   P.(pars.BANDS{i}).sd_z = nan(1,E);
-   P.(pars.BANDS{i}).n  = nan(1,E);
-   ps_f = ps_(f_idx,:);
-   x = mean(ps_f,1).';
-   x = (x - mean(x))/std(x); % Do initial offset and variance correction
-   X = x(vec);
+   ps_f = ps_(f_idx,:); % Note: ps_ is log-transformed, has mask applied
+   p = mean(ps_f,1); % Keep this for assignment
+   x = p.';
+   % Subtract time-series average divide by time-series standard-deviation
+   muX = mean(x); 
+   sdX = std(x);
+   xnorm = (x - muX)/sdX; 
+   X = xnorm(vec);
    C = cov(X);    %  Get covariance matrix
    W = C^(-0.5);  %  Get whitening matrix
    Z = W * (X.'); %  Apply whitening transformation
    z = Z(iZ,:);   %  Take row from "middle"
-   P.(pars.BANDS{i}).z = z;
-   for k = 1:E
+   for k = 1:nEpoch
+      epochName = pars.EPOCH_NAMES{k};
+      iTable = iTable + 1;
+      tmpID.BandID(iTable) = i;
+      tmpID.EpochID(iTable) = k;
       t_idx = ...
-         (t_>=pars.EPOCH_ONSETS(k)) & ...
-         (t_<=pars.EPOCH_OFFSETS(k));
-      if sum(t_idx) == 0
+         find( (t_>=pars.EPOCH_ONSETS(k)) & ...
+               (t_<=pars.EPOCH_OFFSETS(k)));
+      
+      tz_idx = ...
+         find( (t_z>=pars.EPOCH_ONSETS(k)) & ...
+               (t_z<=pars.EPOCH_OFFSETS(k)));
+            
+      nSamples_z = numel(tz_idx);
+      nSamples_p = numel(t_idx);
+      if nSamples_z < nBin
          warning(['TDCS:' mfilename ':BadEpoch'],...
-            '\n\t\t->\tNo "non-masked" times for %s: %s\n            \n',...
-            name,pars.EPOCH_NAMES{k});
+            '\n\t\t->\tInsufficient "non-masked" samples for %s: %s\n            \n',...
+            name,epochName);
          continue;
       end
-      P.(pars.BANDS{i}).mu(k) = mean(mean(ps_f,2),1);
-      P.(pars.BANDS{i}).mu_z(k) = mean(mean(z(t_idx),1),2);
-      P.(pars.BANDS{i}).sd(k) = mean(std(ps_f,[],2),1);
-      P.(pars.BANDS{i}).sd_z(k) = mean(std(z(t_idx),[],1),2);
-      P.(pars.BANDS{i}).n(k) = sum(t_idx);
       
+      % Get "selected" indices by equally dividing `nBin` points
+      short_idx = round(linspace(1,nSamples_z,nBin));
+      norm_idx = round(linspace(1,nSamples_p,nBin));
+      TZ(iTable,:) = z(tz_idx(short_idx));
+      TP(iTable,:) = (p(t_idx(norm_idx)) - muX)/sdX;
+      
+      fprintf(1,'\b\b\b\b\b\b\b\b\b\b\b\bwriting...');
+      
+      Tkey = table(...
+         ones(nBin,1).*F.animalID,...
+         ones(nBin,1).*F.conditionID,...
+         ones(nBin,1).*i,...
+         ones(nBin,1).*k,...
+         TT,...
+         TP(iTable,:).',...
+         TZ(iTable,:).',...
+         'VariableNames',col_key);
+      if strcmpi(pars.DB_INTERACTION_MODE,'update')
+         whereclause = sprintf(...
+            ['WHERE (Stats.dbo.LFPkey.AnimalID = %g) AND ' ...
+            '(Stats.dbo.LFPkey.ConditionID = %g) AND ' ...
+            '(Stats.dbo.LFPkey.BandID = %g) AND '...
+            '(Stats.dbo.LFPkey.EpochID = %g)'],...
+            F.animalID,F.conditionID,i,k);
+         update(conn,lfp_key_db_tab,col_key,Tkey,whereclause);
+      else
+         datainsert(conn,lfp_key_db_tab,col_key,Tkey); % if table has no dat
+      end
+      
+%       % Write to the "Key" file for each time-sample
+%       for iSample = 1:nBin
+%          % AnimalID  ConditionID  BandID  EpochID  T P Z
+%          datainsert(conn,lfp_key_db_tab,col_key,...
+%             );
+%       end
+      tmpKey = [tmpKey; Tkey]; %#ok<AGROW>
+      fprintf(1,'\b\b\b\b\b\b\b\b\b\bindexing... ');
    end
 end
 
 
-
 fprintf(1,'\b\b\b\b\b\b\b\b\b\b\b\bsaving...');
-% Append TIME to filename so it doesn't overwrite an old stats worksheet;
-% at this point stats will be done with JMP (outside of Matlab) so we don't
-% need a naming convention that necessarily has to be parsed for reading
-% back into Matlab; we can save that as a different MatFile
-if exist(pars.OUTPUT_STATS_DIR_CSV,'dir')==0
-   mkdir(pars.OUTPUT_STATS_DIR_CSV);
+if strcmpi(pars.DB_INTERACTION_MODE,'update')
+   whereclause = sprintf('WHERE Stats.dbo.LFPid.AnimalID = %g',F.animalID);
+   update(conn,lfp_id_db_tab,col_id,tmpID,whereclause);
+else
+   datainsert(conn,lfp_id_db_tab,col_id,tmpID);   
 end
-if exist(pars.OUTPUT_STATS_DIR_MAT,'dir')==0
-   mkdir(pars.OUTPUT_STATS_DIR_MAT);
-end
-
-outname = fullfile(pars.OUTPUT_STATS_DIR,...
-   [datestr(datetime('YYYY-mm-dd_HH-MM-SS')) pars.LFP_STATS_FILE '.csv']);
-save(outname,'P','f','t','ps','fs','pars','-v7.3');
+T = struct('id',tmpID,'key',tmpKey);
 fprintf(1,'\b\b\b\b\b\b\b\b\b<strong>complete</strong>\n');
+close(conn);
+
 
 end

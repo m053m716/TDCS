@@ -8,6 +8,7 @@ pars = struct;
 
 % Group info
 pars.TREATMENT = [1,2,3,4,5,6];
+pars.CURRENT_ID = [-1 1 -1 1 -1 1];
 pars.TREATMENT_FILE_KEY = {'0_0mA-Anodal','0_0mA-Cathodal','0_2mA-Anodal','0_2mA-Cathodal','0_4mA-Anodal','0_4mA-Cathodal'};
 pars.NAME_KEY = {'0.0 mA Anodal','0.0 mA Cathodal','0.2 mA Anodal','0.2 mA Cathodal','0.4 mA Anodal','0.4 mA Cathodal'};
 pars.TREATMENT_COL_FILL = [...
@@ -77,7 +78,7 @@ else
          end
       end
    else
-      for iV = 1:nargout
+      for iV = 1:nargin
          idx = strcmpi(F,varargin{iV});
          if sum(idx) == 1
             fprintf('<strong>%s</strong>:',F{idx});

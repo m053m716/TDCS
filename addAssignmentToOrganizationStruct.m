@@ -3,7 +3,10 @@ function F = addAssignmentToOrganizationStruct(F)
 %
 %  F = addAssignmentToOrganizationStruct(F);
 
-load(fullfile(defs.Spikes('DIR'),defs.Spikes('ASSIGNMENT_FILE')),'Assignment');
+load(fullfile(defs.Spikes('DIR'),defs.Spikes('ASSIGNMENT_FILE')),...
+   'Assignment');
+
+currentID_assignment = defs.Experiment('CURRENT_ID');
 
 sessionID = {F.name}';
 sessionID = cellfun(@(x)x(6:7),sessionID,'UniformOutput',false);
@@ -25,11 +28,14 @@ conditionID = nan(size(idx));
 
 animalID(vec) = Assignment.Animal(idx(vec));
 conditionID(vec) = Assignment.Condition(idx(vec));
+currentID = currentID_assignment(conditionID);
 
 animalID = num2cell(animalID);
 conditionID = num2cell(conditionID);
+currentID = num2cell(currentID);
 
 [F.animalID] = deal(animalID{:});
 [F.conditionID] = deal(conditionID{:});
+[F.currentID] = deal(currentID{:});
 
 end

@@ -3,14 +3,8 @@ function C = GetExclusionCounts(F,varargin)
 %
 %   C = GETEXCLUSIONCOUNTS(F,'NAME',value,...);
 
-% DEFAULTS
-pars = struct;
-pars.MIN_RATE = 0.1; % Hz
-
-% PARSE VARARGIN
-for iV = 1:2:numel(varargin)
-    pars.(upper(varargin{iV})) = varargin{iV+1};
-end
+% Parse inputs
+pars = parseParameters('Spikes',varargin{:});
 
 % GET COUNTS FOR EACH FILE IN F
 C = [];

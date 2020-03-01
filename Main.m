@@ -7,8 +7,8 @@ AppendedSpikeData = AppendGroupAssignments(SpikeData);
 
 %% INCLUSION EXCLUSION DATA: 0.1 Hz MIN RATE
 C = GetExclusionCounts(F);
-load('2017-08-09_Exclusion Counts.mat','C');
-[C,E] = generateExclusionTable(C);
+% load('2017-08-09_Exclusion Counts.mat','C');
+[C,E] = generateExclusionTable(C); % ~ 2 minutes
 % writetable(E.animal,'TDCS Unit counts by Animal.xlsx');
 % writetable(E.treatment, 'TDCS Unit counts by Treatment.xlsx');
 % writetable(E.both, 'TDCS Unit counts by Animal and Treatment.xlsx');

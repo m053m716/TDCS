@@ -10,16 +10,8 @@ function hg = addEpochLabelsToAxes(ax,varargin)
 %  hg : Graphics object group handle with all the separator lines,
 %        rectangles and texts on them.
 
-pars = defs.LFP_Average('EPOCH_ONSETS','EPOCH_OFFSETS','EPOCH_COL',...
-   'LABEL_OFFSET','LABEL_HEIGHT','LINE_COL','EPOCH_NAMES','TEXT_COL',...
-   'RECT_CURVATURE');
-F = fieldnames(pars);
-for iV = 1:2:numel(varargin)
-   idx = strcmpi(F,varargin{iV});
-   if sum(idx)==1
-      pars.(F{idx}) = varargin{iV+1};
-   end
-end
+
+pars = parseParameters('EpochLabels',varargin{:});
 
 yMin = get(gca,'YLim')-pars.LABEL_OFFSET;
 yMax = yMin(2);

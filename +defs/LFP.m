@@ -9,6 +9,8 @@ function varargout = LFP(varargin)
 % Main options
 pars = struct;
 pars.N_BIN_PER_BAND = 10;
+pars.N_BIN_PER_EPOCH = 100; 
+pars.DB_INTERACTION_MODE = 'update'; % Can be 'update' or 'append'
 pars.LFP_DATA_TAG = '_REF_';
 pars.OUTPUT_FIG_DIR = defs.FileNames('OUTPUT_FIG_DIR');
 pars.OUTPUT_STATS_DIR_CSV = defs.FileNames('OUTPUT_STATS_DIR_CSV');
@@ -16,6 +18,8 @@ pars.OUTPUT_STATS_DIR_MAT = defs.FileNames('OUTPUT_STATS_DIR_MAT');
 pars.RMS_MASK_FILE = defs.FileNames('RMS_MASK_FILE');
 pars.LFP_FILE = defs.FileNames('LFP_FILE');
 pars.LFP_STATS_FILE = defs.FileNames('LFP_STATS_FILE');
+pars.LFP_RM_STATS_FILE = defs.FileNames('LFP_RM_STATS_FILE');
+pars.LFP_SPECTRA_FIG_FILE = ''; % To export, set this non-empty
 pars.WLEN = defs.SlidingPower('WLEN');
 pars.NSAMPLES_COV = 61; % How many samples "forward" and "backward" to use to estimate covariance matrix
 pars.DESCRIPTION = struct(...
@@ -47,7 +51,7 @@ pars.FC.High_Gamma   = [70 105];
 pars.EPOCH_NAMES = defs.Experiment('EPOCH_NAMES'); % {'BASAL','STIM','POST1','POST2','POST3','POST4'}; % Labels of epochs
 pars.EPOCH_ONSETS = defs.Experiment('EPOCH_ONSETS'); % [5  15 35 50 65 80]; % (Values in minutes)
 pars.EPOCH_OFFSETS = defs.Experiment('EPOCH_OFFSETS'); % [15 35 50 65 80 95]; % (Values in minutes)
-
+pars.TLIM_LABS = [0 2];
 
 % These are parsed based on fields of pars.FC (LFP bands)
 pars.BANDS = fieldnames(pars.FC);
@@ -59,7 +63,7 @@ for i = 1:numel(pars.BANDS)
 end
 pars.FREQS = sort(pars.FREQS,'ascend');
    
-if nargin < 1
+if numel(varargin) < 1
    varargout = {pars};   
 else
    F = fieldnames(pars);   
@@ -73,17 +77,17 @@ else
       end
    elseif nargout > 0
       varargout = cell(1,nargout);
-      for iV = 1:nargout
+      for iV = 1:numel(varargin)
          idx = strcmpi(F,varargin{iV});
          if sum(idx)==1
             varargout{iV} = pars.(F{idx});
          end
       end
    else
-      for iV = 1:nargout
+      for iV = 1:numel(varargin)
          idx = strcmpi(F,varargin{iV});
          if sum(idx) == 1
-            fprintf('<strong>%s</strong>:',F{idx});
+            fprintf('<strong>%s</strong>:\n',F{idx});
             disp(pars.(F{idx}));
          end
       end

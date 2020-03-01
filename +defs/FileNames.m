@@ -7,6 +7,8 @@ function varargout = FileNames(varargin)
 pars = struct;
 % DEFAULTS
 pars.DIR = 'P:\Rat\tDCS';
+pars.DATABASE = 'Stats'; % Name of SQLExpress Statistics server on CPL-VISION
+pars.DATABASE_LFP = struct('Atomic','Stats.dbo.LFPid','Key','Stats.dbo.LFPkey'); 
 pars.OUTPUT_FIG_DIR = 'J:\Rat\tDCS\2020_Figures';
 pars.OUTPUT_STATS_DIR_CSV = 'J:\Rat\tDCS\2020_Stats';
 pars.OUTPUT_STATS_DIR_MAT = fullfile(pars.OUTPUT_STATS_DIR_CSV,'_mat');
@@ -16,11 +18,15 @@ pars.SPIKE_SERIES = '2017-11-22_Updated Spike Series.mat';
 pars.LFP = '2017-07-13_LFP Data.mat';
 pars.DATA_STRUCTURE = '2017 TDCS Data Structure Organization.mat';
 pars.EPOCH_DATA = '2017-06-17_Concatenated Epoch Data.mat';
+pars.ASSIGNMENT_FILE = '2017-06-14_Excluded Metric Subset.mat';
 
 % SPECIFIC FILES
 pars.RMS_MASK_FILE = '%s_RMS-Mask.mat';
 pars.LFP_FILE = '%s_LFP.mat';
 pars.LFP_STATS_FILE = 'LFP_BandPower_Stats';
+pars.LFP_RM_STATS_FILE = 'LFP_RM_BandPower_Stats';
+pars.LFP_DETAILED_STATS_FILE = 'LFP_Detailed_BandPower_Stats';
+pars.LFP_DETAILED_STATS_TS_FILE = 'LFP_Detailed_BandPower_Stats_TimeSeries';
 
 if nargin < 1
    varargout = {pars};   
@@ -43,7 +49,7 @@ else
          end
       end
    else
-      for iV = 1:nargout
+      for iV = 1:nargin
          idx = strcmpi(F,varargin{iV});
          if sum(idx) == 1
             fprintf('<strong>%s</strong>:',F{idx});

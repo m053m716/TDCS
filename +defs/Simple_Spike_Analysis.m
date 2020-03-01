@@ -6,17 +6,15 @@ function varargout = Simple_Spike_Analysis(varargin)
 
 pars = struct;
 % DEFAULTS
-pars.DIR = '';
 pars.ISTART = [];
 pars.ISTOP = [];
-pars.DEF_DIR = 'P:\Rat';      % Default directory for UI selection
+pars.TSTART = [];
+pars.TSTOP = [];
 pars.LIB_DIR = 'libs';        % Library directory for added functions
-pars.FS = 20000;              % Used if 'pars' struct is not found
-pars.SHOW_PROGRESS = true;    % Shows progress bar by default
-pars.USE_SPK_SUB_DIR = true;  % Use sub-directory for "good" spikes
-pars.USE_START_STOP = true;   % Use 'START' and 'STOP' times in save name
+pars.USE_START_STOP = false;  % Use 'START' and 'STOP' times in save name
 pars.RAT_START = 1;           % Starting index of RAT in block name
 pars.RAT_END = 6;             % Ending index of RAT in block name
+pars.SAVE_SNIPS = false;      % Save spike snippets associated with each peak?
 % (for tDCS, change to 5)
 
 % Warning suppression
@@ -25,9 +23,8 @@ pars.SAVE_DIR = '';
 pars.INSERT_TAG = '';
 
 % Names of directories where spikes are kept
-pars.SPK_DIR = '_ad-PT_SPC_Clusters';
-pars.CAR_SPK_DIR = '_ad-PT_SPC_CAR_Clusters';
-pars.SUB_DIR = 'Good';
+pars.SPK_DIR = '_wav-sneo_CAR_Spikes';
+pars.SUB_DIR = '';
 pars.SAVE_ID = '_SpikeSummary.mat';
 
 % Table properties parameters
