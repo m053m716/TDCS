@@ -9,7 +9,7 @@ pars = parseParameters('Spikes',varargin{:});
 % GET COUNTS FOR EACH FILE IN F
 C = [];
 for iF = 1:numel(F)
-    temp = fullfile(F(iF).block,[F(iF).base '_ad-PT_SPC_Clusters']);
+    temp = fullfile(F(iF).block,[F(iF).base pars.SPK_DIR]);
     C = [C; countUnits('DIR',temp,'SAVE',true)]; %#ok<AGROW>
 end
 

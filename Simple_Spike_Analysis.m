@@ -128,7 +128,8 @@ nFiles = numel(spikeFiles);
 Rat = repmat({rat},nFiles,1);
 Block = repmat({bk},nFiles,1);
 Channel = nan(nFiles,1);   
-Cluster = nan(nFiles,1);     
+% Cluster = nan(nFiles,1);
+Cluster = ones(nFiles,1);
 NumSpikes = nan(nFiles,1);     
 Duration = nan(nFiles,1);   
 Rate = nan(nFiles,1);   
@@ -209,18 +210,19 @@ for ii = 1:nFiles
       Snips{ii} = spk.spikes; 
    end
    
-   ch = str2double(spikeFiles(ii).name((end-8):(end-6)));
-   if isnan(ch)
-      ch = str2double(spikeFiles(ii).name((end-7):(end-6)));
-   end
-   cl = str2double(spikeFiles(ii).name(end-4));
+   [~,strInfo,~] = fileparts(spikeFiles(ii).name);
+   strInfo = strsplit(strInfo,'_');
+   iCh = find(strcmp(strInfo,'Ch'),1,'first')+1;
+   
+   ch = str2double(strInfo{iCh});
+%    cl = str2double(spikeFiles(ii).name(end-4));
    
    n = numel(tPeak);
    rt = n./dur;
    lvr = LvR(tPeak);
    
    Channel(ii) = ch;
-   Cluster(ii) = cl;
+%    Cluster(ii) = cl;
    NumSpikes(ii) = n;
    Duration(ii) = dur;
    Rate(ii) = rt;
