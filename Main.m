@@ -1,3 +1,22 @@
+%% IMPORT EXTERNAL REPOSITORIES
+%   All fields of the struct variable `repos` will be added to the Matlab
+%   search path once this is run. You should match values here to the
+%   appropriate paths on your local machine. Values in `repos` struct can
+%   be set in the files +defs/Repos.m
+%
+% The following are required:
+% * `cbrewer` (match repos.CBREWER_PATH to your local value)
+%  --> See: https://www.mathworks.com/matlabcentral/fileexchange/34087-cbrewer-colorbrewer-schemes-for-matlab
+%
+% * `Robust_Statistical_Toolbox` (match repos.ROBUST_STATISTICS_PATH)
+%  --> See: https://github.com/CPernet/Robust_Statistical_Toolbox
+%
+% * `RainCloudPlots` (match repos.RAINCLOUDPLOTS_PATH)
+%  --> See: https://github.com/RainCloudPlots/RainCloudPlots
+
+repos = defs.Repos();
+addHelperRepos(repos);
+
 %% SIMPLE SPIKE DATA
 % Load in all the simple spike data
 [SpikeData,F] = LoadSpikeSummaries;
@@ -6,12 +25,11 @@
 AppendedSpikeData = AppendGroupAssignments(SpikeData);
 
 %% INCLUSION EXCLUSION DATA: 0.1 Hz MIN RATE
-C = GetExclusionCounts(F);
-load('2017-08-09_Exclusion Counts.mat','C');
-[C,E] = generateExclusionTable(C);
-% writetable(E.animal,'TDCS Unit counts by Animal.xlsx');
-% writetable(E.treatment, 'TDCS Unit counts by Treatment.xlsx');
-% writetable(E.both, 'TDCS Unit counts by Animal and Treatment.xlsx');
+C = GetExclusionCounts(F); % ~ 2 minutes
+% [C,E] = generateExclusionTable(C); 
+% writetable(E.animal,fullfile(defs.FileNames('OUTPUT_STATS_DIR_CSV'),'TDCS Unit counts by Animal.csv'));
+% writetable(E.treatment,fullfile(defs.FileNames('OUTPUT_STATS_DIR_CSV'),'TDCS Unit counts by Treatment.csv'));
+% writetable(E.both,fullfile(defs.FileNames('OUTPUT_STATS_DIR_CSV'),'TDCS Unit counts by Animal and Treatment.csv'));
 
 %% FIG 2: AVERAGE RATE BY ANIMAL // BY TREATMENT // BOTH
 genWholeTrialFigs(C);

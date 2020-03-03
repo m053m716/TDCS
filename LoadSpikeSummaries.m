@@ -16,17 +16,7 @@ function [SpikeData,F] = LoadSpikeSummaries(varargin)
 %        * 'MIN_SIZE' : 200000 (Min summary file size; bytes)
 
 % DEFAULT CONSTANTS
-switch nargin
-   case 0
-      pars = defs.Spikes();
-   case 1
-      pars = varargin{1};
-   otherwise
-      pars = defs.Spikes();
-      for iV = 1:2:numel(varargin)
-         pars.(upper(varargin{iV})) = varargin{iV+1};
-      end
-end
+pars = parseParameters('Spikes',varargin{:});
 
 % INITIALIZE
 if isfield(pars,'F')
@@ -35,14 +25,13 @@ else
    in = load(fullfile(pars.DIR,pars.FILE),'F');
    F = in.F;
 end
-tStart = tic;
 
 % LOOP AND LOAD ALL TABLES INTO CELL BASED ON EPOCH
 nRec = numel(F);
 
 SpikeData = cell(1,6);
 iBlock = 1;
-tStart = tic;
+ticStart = tic;
 fprintf(1,'Beginning extracted summary epoch concatenation...\n');
 for ii = 1:nRec
    rec_name = fullfile(pars.DIR,F(ii).name);
@@ -55,7 +44,7 @@ for ii = 1:nRec
       fprintf(1,'\t->\t%s\n',block_name);
       block_contents = dir(fullfile(block_name, ...
          [block(iB).name '*' pars.SUM_ID]));
-      
+      % File-size exclusion is heuristic
       if any([block_contents.bytes] < pars.MIN_SIZE) || (~F(ii).included)
          F(ii).included = false;
          fprintf(1,'\t-->\t%s <strong>skipped</strong>\n',block(iB).name);
@@ -65,24 +54,23 @@ for ii = 1:nRec
          fprintf(1,'\t-->\t%s included\n',block(iB).name);
          for iC = 1:numel(block_contents)
             temp = strsplit(block_contents(iC).name,'_');
-            temp = temp{6};
-            switch temp
-               case '0005'
-                  iContents = 1;
-               case '0015'
-                  iContents = 2;
-               case '0035'
-                  iContents = 3;
-               case '0050'
-                  iContents = 4;
-               case '0065'
-                  iContents = 5;
-               case '0080'
-                  iContents = 6;
-               otherwise
-                  warning('\n\t\t-->\t%s <strong>found</strong> (but not assigned)\n', ...
+            if numel(temp) < 7
+               fprintf(1,'\t\t-->\t%s <strong>found</strong> (but not assigned)\n', ...
                      block_contents(iC).name);
-                  continue;
+               continue;
+            end
+            tStart = str2double(temp{6});
+            tStop = str2double(temp{7});
+            
+            idx = ismember(pars.EPOCH_ONSETS,tStart) & ismember(pars.EPOCH_OFFSETS,tStop);
+            if sum(idx) == 1
+               iContents = find(idx,1,'first');
+               fprintf(1,'\t\t-->\t%s <strong>added</strong>\n', ...
+                     pars.GROUPS{iContents});
+            else
+               fprintf(1,'\t\t-->\t%s <strong>found</strong> (but not assigned)\n', ...
+                     block_contents(iC).name);
+               continue;
             end
             load(fullfile(block_name,block_contents(iC).name),'D');
             SpikeData{1,iContents} = [SpikeData{1,iContents}; D];
@@ -93,5 +81,5 @@ end
 save(fullfile(pars.DIR,pars.FILE),'F','-v7.3');
 
 fprintf(1,'\n\nSpike Summary concatenation <strong>complete!</strong>\n');
-ElapsedTime(tStart);
+ElapsedTime(ticStart);
 end

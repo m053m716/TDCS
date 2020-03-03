@@ -1,5 +1,5 @@
 function mmDS(varargin)
-%% MMDS  Down-sample raw data and save to its own sub-folder in block.
+%MMDS  Down-sample raw data and save to its own sub-folder in block.
 %
 %   MMDS;
 %   MMDS(pars);
@@ -48,47 +48,18 @@ function mmDS(varargin)
 %   --------
 %   Saves downsampled and notch-filtered data in [Block]_DS folder as
 %   single channel data.
-%
-% By: Max Murphy    v1.0    08/10/2017  Original version (R2017a)
 
-%% DEFAULTS
-% Main options
-pars = struct;
-pars.DEC_FS = 1000;    % Desired sample rate (Hz; may not end up exact)
-pars.NOTCH = [57,  63;  ...
-              117, 123; ... % If empty, no notch applied; otherwise, use
-              177, 183; ... % bands specified by rows of this matrix.
-              237, 243];
+pars = parseParameters('DS',varargin{:});
 
-% Directory info
-pars.DEF_DIR = 'P:\Rat\tDCS';    % Default UI selection direcotry
-pars.IN_PATH = 'RawData';        % Appended folder name for raw data
-pars.IN_ID = 'Raw';              % Tag for files to input
-pars.OUT_ID = 'DS';              % Tag/appended folder name for DS data
-pars.DELIM = '_';                % Delimiter for file name inputs
-
-% Cluster info
-pars.USE_CLUSTER=false;        % Option to run on Isilon cluster
-pars.UNC_PATH='\\kumc.edu\data\research\SOM RSCH\NUDOLAB\Processed_Data\';
-
-%% PARSE VARARGIN
-if nargin == 1
-    pars = varargin{1};
-else
-    for iV = 1:2:numel(varargin)
-        pars.(varargin{iV}) = varargin{iV+1};
-    end
-end
-
-%% GET DIRECTORY
-if isfield(pars,'DIR')==0
+% GET DIRECTORY
+if isempty(pars.DIR)==0
     pars.DIR = uigetdir(pars.DEF_DIR,'Select recording BLOCK');
     if pars.DIR == 0 
         error('No selection. Script canceled.');
     end
 end
 
-%% GET INPUT FILES
+% GET INPUT FILES
 base = strsplit(pars.DIR,filesep);
 base = base{end};
 finfo = strsplit(base,'DELIM');

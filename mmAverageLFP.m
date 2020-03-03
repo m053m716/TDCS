@@ -32,10 +32,10 @@ function [f,t,P,fig,P_plot] = mmAverageLFP(varargin)
 %
 %   See also: MMMEMFREQ, MMDN_FILT, MMDS
 
-%% DEFAULTS
+% DEFAULTS
 pars = defs.LFP_Average();
 
-%% PARSE VARARGIN
+% PARSE VARARGIN
 if nargin>0
    idx = cellfun(@(x)isa(x,'matlab.graphics.axis.Axes'),varargin);
    if sum(idx)==1
@@ -76,7 +76,7 @@ if nargin>0
       end
    end
 end
-%% SET UP INTERPOLATION VECTOR
+% SET UP INTERPOLATION VECTOR
 if ~isfield(pars,'P')
    if exist('F','var')==0
       [fname,pname] = uigetfile('*MEM*.mat','Select LFP MEM files',...
@@ -108,7 +108,7 @@ else % Otherwise, we go the 'lfp' struct directly
 end
 
 
-%% PLOT, IF SPECIFIED
+% PLOT, IF SPECIFIED
 if pars.PLOT
    if pars.NEWFIG
       fig = figure(...
@@ -135,8 +135,6 @@ if pars.PLOT
    o = imagesc(ax,t./60,f,P_plot);
    ylim(ax,[min(o.YData) max(o.YData)]);
    addEpochLabelsToAxes(ax);
-   
-   
    
    ax.YScale = 'log';
    ax.YTick = pars.YTICK;

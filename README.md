@@ -24,7 +24,7 @@ Neurophysiological data was extracted from binary data files using the batch pro
 
 2. Traces of the processed data were inspected visually to ensure that data was free of recording artifacts due to non-biological sources. This sort of artifact is very large and typically evident by visual inspection.
 
-   * For consistency, an RMS filter was applied to 1-second-long "chunks" of non-overlapping samples, allowing us to set an automated RMS exclusion threshold based on the distribution of raw data magnitudes that automatically rejects artifacts.
+   * For consistency, an RMS filter was applied to 1-second-long "chunks" of non-overlapping samples, allowing us to set an automated RMS exclusion threshold based on the distribution of raw data magnitudes that automatically rejects artifacts. **See [`make_RMS_mask`](https://github.com/m053m716/TDCS/blob/master/make_RMS_mask.m) for details. **
 
 3. For Spikes, units were detected and sorted using a preliminary automated sorting procedure followed by a secondary manual curation step.
 
@@ -34,5 +34,12 @@ After these steps, initial data processing was considered complete.
 
 ### Spikes ###
 
-See `Simple_Spike_Analysis.m`
+See **[`Simple_Spike_Analysis.m`](https://github.com/m053m716/TDCS/blob/master/Simple_Spike_Analysis.m)**
 
+### Local Field Potential (LFP) ###
+
+* Band power for LFP bands (defined in **[`defaults.LFP()`](https://github.com/m053m716/TDCS/blob/master/%2Bdefs/LFP.m)**) was obtained using the Matlab `spectrogram` method to compute the short-time Fourier transform. 
+* Within each band, frequency bins bounded by band ranges were used to compute the average RMS band power.
+  * 10 frequency bins were used per band, which were log-spaced throughout the band range.
+  * We then applied a log-transform to the RMS value in order to account for right-skew in the RMS distribution.
+* After the RMS computation, we computed the covariance matrix of band power samples through time to determine if samples could be treated as independent, random variables.

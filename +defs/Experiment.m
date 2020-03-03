@@ -8,6 +8,7 @@ pars = struct;
 
 % Group info
 pars.TREATMENT = [1,2,3,4,5,6];
+pars.CURRENT_ID = [-1 1 -1 1 -1 1];
 pars.TREATMENT_FILE_KEY = {'0_0mA-Anodal','0_0mA-Cathodal','0_2mA-Anodal','0_2mA-Cathodal','0_4mA-Anodal','0_4mA-Cathodal'};
 pars.NAME_KEY = {'0.0 mA Anodal','0.0 mA Cathodal','0.2 mA Anodal','0.2 mA Cathodal','0.4 mA Anodal','0.4 mA Cathodal'};
 pars.TREATMENT_COL_FILL = [...
@@ -55,6 +56,9 @@ pars.TALL_FIG_RIGHT = [0.50, 0.175, 0.25, 0.70];
 pars.TALL_FIG_RAND  = [rand(1)*0.3+0.2, 0.175, 0.25, 0.70];
 pars.SHORT_FIG_RAND  = [rand(1)*0.3+0.2, rand(1)*0.3+0.175, 0.25, 0.25];
 pars.FIG_POS = [rand(1)*0.05+0.2,rand(1)*0.05+0.175,0.5,0.6];
+addHelperRepos(defs.Repos());
+pars.ANIMAL_COL = cbrewer('qual','Set1',9);
+pars.CONDITION_COL = cbrewer('qual','Paired',6);
 
 if nargin < 1
    varargout = {pars};   
@@ -77,7 +81,7 @@ else
          end
       end
    else
-      for iV = 1:nargout
+      for iV = 1:nargin
          idx = strcmpi(F,varargin{iV});
          if sum(idx) == 1
             fprintf('<strong>%s</strong>:',F{idx});

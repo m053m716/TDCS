@@ -1,25 +1,20 @@
-function AppendedSpikeData = AppendGroupAssignments(SpikeData,varargin)
+function AppendedSpikeData = AppendGroupAssignments(SpikeData,Assignment,varargin)
 %APPENDGROUPASSIGNMENTS   Append group and animal to Spike Summaries
 %
 %   AppendedSpikeData = APPENDGROUPASSIGNMENTS(SpikeData,'NAME',value,...)
 
-% DEFAULT CONSTANTS
-switch nargin
-   case 0
-      error('Too few input arguments.');
-   case 1
-      pars = defs.Spikes();
-   case 2
-      pars = varargin{1};
-   otherwise
-      pars = defs.Spikes();
-      for iV = 1:2:numel(varargin)
-         pars.(upper(varargin{iV})) = varargin{iV+1};
-      end
-end
 
 % INITIALIZE
-load(fullfile(pars.DIR,pars.ASSIGNMENT_FILE),'Assignment');
+if nargin < 2
+   [p,f] = defs.Spikes('DIR','ASSIGNMENT_FILE');
+   in = load(fullfile(p,f),'Assignment');
+   Assignment = in.Assignment;
+end
+
+% Load default parameters
+pars = parseParameters('Spikes',varargin{:});
+
+
 N = size(SpikeData{1,1},1);
 Condition = nan(N,1);
 Animal = nan(N,1);

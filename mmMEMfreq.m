@@ -1,5 +1,5 @@
 function mmMEMfreq(varargin)
-%% MMMEMFREQ     Calculate maximum entropy frequency spectrum estimate.
+%MMMEMFREQ     Calculate maximum entropy frequency spectrum estimate.
 % 
 %   MMMEMFREQ;
 %   MMMEMFREQ(pars);
@@ -62,12 +62,9 @@ function mmMEMfreq(varargin)
 %   decimated sampling frequency; and pars, which is the structure
 %   containing all the input parameters for the run.
 %
-% Adapted by: Max Murphy    v2.0    08/15/2017 (Matlab R2017a)
-%   Original: David Bundy   v1.0    ??/??/????
-%
 %   See also: MMDS, QDS, QMMMEMFREQ
 
-%% DEFAULTS
+% DEFAULTS
 pars = struct;
 
 % MEM estimate parameters
@@ -103,7 +100,7 @@ pars.PROBE_IND = 2;     % Number of '_' delimited indexes back from end
 pars.USE_CLUSTER = false;
 
 
-%% PARSE VARARGIN
+% PARSE VARARGIN
 if nargin == 1
     if isa(varargin{1},'struct')
         pars = varargin{1};
@@ -119,7 +116,7 @@ else
     end
 end
 
-%% GET DIRECTORY
+% GET DIRECTORY
 if ~isfield(pars,'DIR')
     pars.DIR = uigetdir(pars.DEF_DIR,'Select recording BLOCK');
     if pars.DIR==0
@@ -127,7 +124,7 @@ if ~isfield(pars,'DIR')
     end
 end
 
-%% GET FILE NAME INFO
+% GET FILE NAME INFO
 base = strsplit(pars.DIR,filesep);
 base = base{end};
 finfo = strsplit(base,pars.DELIM);
@@ -149,7 +146,7 @@ end
 
 
 
-%% LOAD DATA
+% LOAD DATA
 if pars.USE_CLUSTER
     myJob = getCurrentJob;
     set(myJob,'Tag',['MEM LFP: Loading data for '...
@@ -180,12 +177,12 @@ if ~pars.USE_CLUSTER
     fprintf(1,'complete.\n');
 end
 
-%% CONSOLIDATE TO MATRICES
+% CONSOLIDATE TO MATRICES
 for iP = 1:pnum
     Data{iP} = cell2mat(Data{iP});
 end
 
-%% DO RE-REFERENCING
+% DO RE-REFERENCING
 if pars.USE_CLUSTER
     set(myJob,'Tag',['MEM LFP: Re-referencing '...
         finfo{1} '...']);
@@ -219,7 +216,7 @@ if ~pars.USE_CLUSTER
     fprintf(1,'complete.\n');
 end
 
-%% PRE-ALLOCATE
+% PRE-ALLOCATE
 if pars.USE_CLUSTER
     set(myJob,'Tag',['MEM LFP: Allocating frequency matrices for '...
         finfo{1} '...']);
@@ -245,7 +242,7 @@ if ~pars.USE_CLUSTER
     fprintf(1,'complete.\n');
 end
 
-%% COMPUTE MEM AND SAVE
+% COMPUTE MEM AND SAVE
 for iP = 1:pnum
 Amp=zeros(size(Data{iP},2),numel(pars.FREQS),pars.NUM_WIN);
     if pars.USE_CLUSTER

@@ -5,23 +5,27 @@ function varargout = Spikes(varargin)
 %  [var1,var2,...] = defs.Spikes('var1Name','var2Name',...);
 
 pars = struct;
-pars.MIN_N_SPK = 570;
+pars.MIN_N_SPK = 570; % = 0.1 Hz over 95 minutes
 pars.ANIMAL_COLUMN = 9;
 pars.CONDITION_COLUMN = 10;
 pars.USE_RAT = true;
 pars.MIN_RATE = 0.1;
-pars.GROUPS = {'Pre-Stim', ...
-          'Stimulation', ...
-          'Post-Stim1', ...
-          'Post-Stim2', ...
-          'Post-Stim3', ...
-          'Post-Stim4'};
+pars.GROUPS = {...
+   'BASAL', ...
+   'STIM', ...
+   'POST1', ...
+   'POST2', ...
+   'POST3', ...
+   'POST4'};
 pars.BINVEC = -3:0.1:3;
 pars.DIR = 'P:\Rat\tDCS';                                  % Data directory
-pars.ASSIGNMENT_FILE = '2017-06-14_Excluded Metric Subset.mat';
-pars.FILE = '2017 TDCS Data Structure Organization.mat';   % Data struct file
+pars.ASSIGNMENT_FILE = defs.FileNames('ASSIGNMENT_FILE');
+pars.FILE = defs.FileNames('DATA_STRUCTURE');  % Data struct file
 pars.SUM_ID = '_SpikeSummary.mat';   % Spike summary file ID
 pars.MIN_SIZE = 200000;              % Minimum summary file size (bytes)
+
+% Experiment parameters
+[pars.EPOCH_ONSETS,pars.EPOCH_OFFSETS] = defs.Experiment('EPOCH_ONSETS','EPOCH_OFFSETS');
 
 % Used in `FindSigUnits.m`:
 pars.MIN_SPIKES_X = 900;
@@ -50,7 +54,7 @@ else
          end
       end
    else
-      for iV = 1:nargout
+      for iV = 1:nargin
          idx = strcmpi(F,varargin{iV});
          if sum(idx) == 1
             fprintf('<strong>%s</strong>:',F{idx});
