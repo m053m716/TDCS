@@ -56,6 +56,9 @@ pars.TALL_FIG_RIGHT = [0.50, 0.175, 0.25, 0.70];
 pars.TALL_FIG_RAND  = [rand(1)*0.3+0.2, 0.175, 0.25, 0.70];
 pars.SHORT_FIG_RAND  = [rand(1)*0.3+0.2, rand(1)*0.3+0.175, 0.25, 0.25];
 pars.FIG_POS = [rand(1)*0.05+0.2,rand(1)*0.05+0.175,0.5,0.6];
+addHelperRepos(defs.Repos());
+pars.ANIMAL_COL = cbrewer('qual','Set1',9);
+pars.CONDITION_COL = cbrewer('qual','Paired',6);
 
 if nargin < 1
    varargout = {pars};   

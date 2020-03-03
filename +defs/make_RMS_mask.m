@@ -43,7 +43,7 @@ else
          end
       end
    else
-      for iV = 1:nargout
+      for iV = 1:numel(varargin)
          idx = strcmpi(F,varargin{iV});
          if sum(idx) == 1
             fprintf('<strong>%s</strong>:',F{idx});

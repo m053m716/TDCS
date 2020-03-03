@@ -12,6 +12,7 @@ pars.DATABASE_LFP = struct('Atomic','Stats.dbo.LFPid','Key','Stats.dbo.LFPkey');
 pars.OUTPUT_FIG_DIR = 'J:\Rat\tDCS\2020_Figures';
 pars.OUTPUT_STATS_DIR_CSV = 'J:\Rat\tDCS\2020_Stats';
 pars.OUTPUT_STATS_DIR_MAT = fullfile(pars.OUTPUT_STATS_DIR_CSV,'_mat');
+pars.OUTPUT_STATS_DIR_SPIKES = 'J:\Rat\tDCS\2020_Stats\scratchwork\Spikes';
 pars.RATE_CHANGES = '2017-07-18_Rate Changes.mat';
 pars.WORKSPACE = '2017-07-20_tDCS Workspace.mat';
 pars.SPIKE_SERIES = '2017-11-22_Updated Spike Series.mat';
@@ -19,6 +20,12 @@ pars.LFP = '2017-07-13_LFP Data.mat';
 pars.DATA_STRUCTURE = '2017 TDCS Data Structure Organization.mat';
 pars.EPOCH_DATA = '2017-06-17_Concatenated Epoch Data.mat';
 pars.ASSIGNMENT_FILE = '2017-06-14_Excluded Metric Subset.mat';
+
+% SUBFOLDERS
+pars.RAW_DIR_TAG = '_RawData';
+pars.CAR_DIR_TAG = '_FilteredCAR';
+pars.SPIKE_DIR_TAG = '_wav-sneo_CAR_Spikes';
+pars.DS_DIR_TAG = '_DS';
 
 % SPECIFIC FILES
 pars.RMS_MASK_FILE = '%s_RMS-Mask.mat';

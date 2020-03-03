@@ -1,3 +1,22 @@
+%% IMPORT EXTERNAL REPOSITORIES
+%   All fields of the struct variable `repos` will be added to the Matlab
+%   search path once this is run. You should match values here to the
+%   appropriate paths on your local machine. Values in `repos` struct can
+%   be set in the files +defs/Repos.m
+%
+% The following are required:
+% * `cbrewer` (match repos.CBREWER_PATH to your local value)
+%  --> See: https://www.mathworks.com/matlabcentral/fileexchange/34087-cbrewer-colorbrewer-schemes-for-matlab
+%
+% * `Robust_Statistical_Toolbox` (match repos.ROBUST_STATISTICS_PATH)
+%  --> See: https://github.com/CPernet/Robust_Statistical_Toolbox
+%
+% * `RainCloudPlots` (match repos.RAINCLOUDPLOTS_PATH)
+%  --> See: https://github.com/RainCloudPlots/RainCloudPlots
+
+repos = defs.Repos();
+addHelperRepos(repos);
+
 %% SIMPLE SPIKE DATA
 % Load in all the simple spike data
 [SpikeData,F] = LoadSpikeSummaries;

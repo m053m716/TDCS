@@ -34,9 +34,9 @@ pars.MAX_ISI = 3000;
 pars.DIST_TO_FIT = 'Gamma';
 
 if nargin < 1
-   varargout = {pars};
+   varargout = {pars};   
 else
-   F = fieldnames(pars);
+   F = fieldnames(pars);   
    if (nargout == 1) && (numel(varargin) > 1)
       varargout{1} = struct;
       for iV = 1:numel(varargin)
@@ -54,7 +54,7 @@ else
          end
       end
    else
-      for iV = 1:nargout
+      for iV = 1:nargin
          idx = strcmpi(F,varargin{iV});
          if sum(idx) == 1
             fprintf('<strong>%s</strong>:',F{idx});

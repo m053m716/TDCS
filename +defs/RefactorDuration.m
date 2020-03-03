@@ -1,13 +1,17 @@
-function varargout = SlidingPower(varargin)
-%MAKE_RMS_MASK  Pars for `SlidingPower` function
+function varargout = RefactorDuration(varargin)
+%REFACTORDURATION  TDCS defaults for refactoring epoch durations for spikes
 %
-%  pars = defs.SlidingPower();
-%  [var1,var2,...] = defs.SlidingPower('var1Name','var2Name',...);
+%  pars = defs.RefactorDuration();
+%  [var1,var2,...] = defs.RefactorDuration('var1Name','var2Name',...);
 
 pars = struct;
 % DEFAULTS
-pars.WLEN = 1001;
-pars.OV = 0;
+[pars.TANK,pars.FILE,pars.RAW_DIR_TAG] = defs.FileNames(...
+   'DIR','RMS_MASK_FILE','RAW_DIR_TAG');
+[pars.EPOCH_ONSETS,pars.EPOCH_OFFSETS] = defs.Experiment(...
+   'EPOCH_ONSETS','EPOCH_OFFSETS'); 
+pars.EPOCH = 1:6;
+pars.EPOCH_DURATION = (pars.EPOCH_OFFSETS - pars.EPOCH_ONSETS) .* 60;
 
 if nargin < 1
    varargout = {pars};   

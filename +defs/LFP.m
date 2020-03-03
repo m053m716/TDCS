@@ -63,7 +63,7 @@ for i = 1:numel(pars.BANDS)
 end
 pars.FREQS = sort(pars.FREQS,'ascend');
    
-if numel(varargin) < 1
+if nargin < 1
    varargout = {pars};   
 else
    F = fieldnames(pars);   
@@ -77,17 +77,17 @@ else
       end
    elseif nargout > 0
       varargout = cell(1,nargout);
-      for iV = 1:numel(varargin)
+      for iV = 1:nargout
          idx = strcmpi(F,varargin{iV});
          if sum(idx)==1
             varargout{iV} = pars.(F{idx});
          end
       end
    else
-      for iV = 1:numel(varargin)
+      for iV = 1:nargin
          idx = strcmpi(F,varargin{iV});
          if sum(idx) == 1
-            fprintf('<strong>%s</strong>:\n',F{idx});
+            fprintf('<strong>%s</strong>:',F{idx});
             disp(pars.(F{idx}));
          end
       end
