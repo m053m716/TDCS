@@ -1,5 +1,7 @@
-%% DEFAULTS
+%ADHOCSIMPLESPIKECYCLE  Runs Simple_Spike_Analysis on all tDCS data
+% [deprecated]
 clc;
+%% DEFAULTS
 DIR = 'P:\Rat\tDCS';        % Data directory
 FILT_PATH = '_Filtered';    % Filt data directory
 FS_ID = '_Filt_P1_Ch_008';  % File containing sampling freq

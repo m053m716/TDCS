@@ -1,3 +1,7 @@
+%BATCH_LFP_ACC  Runs plotSpectrogram_TDCS on all blocks with accelerometer
+clc;
+
+%% SET DESIRED BLOCKS AND EXPORT LFP/ACCELEROMETERY DATA
 out_dir = 'G:\Lab Member Folders\Max Murphy\Code\_M\170410 tDCS Assist\Accelerometery_LFP';
 blockNum = [81 93 85 83 77 76 74 54 49 44 9];
 for b = blockNum

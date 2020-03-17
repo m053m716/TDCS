@@ -1,12 +1,17 @@
+%BATCH_LFP_POWER  Iterates on tDCS recordings to plot band-power/condition
+clc;
+
+%% LOAD PARAMETERS AND DATA
 pars = defs.Experiment('TREATMENT','TREATMENT_FILE_KEY','NAME_KEY','TREATMENT_COL_FILL','TREATMENT_COL_EDGE','MARKUP_KEY');
 tank = defs.Experiment('PROCESSED_TANK');
-MIN_PTS = 2000;
-to_view = 1:6;
+MIN_PTS = 2000;  % Minimum # of points (duration) in order to plot
+to_view = 1:6;   % Condition ID numbers
 
 if exist('LFP_Table','var')==0
    LFP_Table = parseLFP_Table();
 end
 
+%% MAKE FIGURE AND AXES
 fig = figure('Name','Sliding LFP Power',...
       'Units','Normalized',...
       'Color','w',...
@@ -64,6 +69,8 @@ for i = to_view
       'IconDisplayStyle','on',...
       'LineWidth',1.5);
 end
+
+%% ADD LABELS TO FIGURE
 addEpochLabelsToAxes(ax,'LABEL_OFFSET',100,'LABEL_HEIGHT',80);
 lgd = legend(ax,pars.MARKUP_KEY(to_view),...
    'Orientation','Vertical',...

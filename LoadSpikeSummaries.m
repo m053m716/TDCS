@@ -78,7 +78,7 @@ for ii = 1:nRec
       end
    end
 end
-save(fullfile(pars.DIR,pars.FILE),'F','-v7.3');
+% save(fullfile(pars.DIR,pars.FILE),'F','-v7.3');
 
 fprintf(1,'\n\nSpike Summary concatenation <strong>complete!</strong>\n');
 ElapsedTime(ticStart);

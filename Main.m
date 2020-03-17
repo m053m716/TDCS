@@ -1,3 +1,6 @@
+%MAIN  Main batch script to run analyses for rat tDCS paper
+clc;
+
 %% IMPORT EXTERNAL REPOSITORIES
 %   All fields of the struct variable `repos` will be added to the Matlab
 %   search path once this is run. You should match values here to the
@@ -24,8 +27,9 @@ addHelperRepos(repos);
 % Get all the random assignments and rate-based exclusion
 AppendedSpikeData = AppendGroupAssignments(SpikeData);
 
-%% INCLUSION EXCLUSION DATA: 0.1 Hz MIN RATE
-C = GetExclusionCounts(F); % ~ 2 minutes
+% %% INCLUSION EXCLUSION DATA: 0.1 Hz MIN RATE
+% % 2020-03-11: This is deprecated due to use of multi-unit activity
+% C = GetExclusionCounts(F); % ~ 2 minutes
 % [C,E] = generateExclusionTable(C); 
 % writetable(E.animal,fullfile(defs.FileNames('OUTPUT_STATS_DIR_CSV'),'TDCS Unit counts by Animal.csv'));
 % writetable(E.treatment,fullfile(defs.FileNames('OUTPUT_STATS_DIR_CSV'),'TDCS Unit counts by Treatment.csv'));

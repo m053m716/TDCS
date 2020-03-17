@@ -34,7 +34,7 @@ end
 tStart = tic;
 
 % LOOP AND LOAD ALL TABLES INTO CELL BASED ON EPOCH
-nRec = numel(TankList);
+nRec = numel(F);
 
 SpikeTrainData = cell(1,6);
 iBlock = 1;
@@ -50,9 +50,9 @@ for ii = 1:nRec
       block_name = fullfile(rec_name,block(iB).name);
       fprintf(1,'\t->\t%s\n',block_name);
       block_contents = dir(fullfile(block_name, ...
-         [block(iB).name '*' SUM_ID]));
+         [block(iB).name '*' pars.SUM_ID]));
       
-      if any([block_contents.bytes] < MIN_SIZE) || (~F(ii).included)
+      if any([block_contents.bytes] < pars.MIN_SIZE) || (~F(ii).included)
          F(ii).included = false;
          fprintf(1,'\t-->\t%s <strong>skipped</strong>\n',block(iB).name);
          continue;
@@ -94,7 +94,7 @@ for ii = 1:nRec
       end
    end
 end
-save(fullfile(pars.DIR,pars.FILE),'F','-v7.3');
+% save(fullfile(pars.DIR,pars.FILE),'F','-v7.3');
 
 fprintf(1,'\n\nSpike Train concatenation <strong>complete!</strong>\n');
 ElapsedTime(tStart);
