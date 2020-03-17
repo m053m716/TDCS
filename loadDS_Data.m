@@ -17,7 +17,6 @@ if iscell(name)
    for i = 1:numel(name)
       F = vertcat(F,find_DS_files_from_name(name{i},tank)); %#ok<AGROW>
    end
-   return;
 else
    F = find_DS_files_from_name(name,tank);
 end
