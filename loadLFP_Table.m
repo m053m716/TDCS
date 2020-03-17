@@ -14,6 +14,24 @@ pars = parseParameters('FileNames',varargin{:});
 if nargin < 1
    in = load(fullfile(pars.DIR,pars.DATA_STRUCTURE),'F');
    F = in.F;
+elseif ischar(F)
+   if exist(F,'file')==2
+      in = load(F,'T');
+      T = in.T;
+      return;
+   elseif exist(F,'dir')==7
+      F = fullfile(F,defs.FileNames('DS_TABLE'));
+      if exist(F,'file')~=2
+         error(['tDCS:' mfilename ':MissingFile'],...
+            '<strong>[TDCS]:</strong> Could not find file: %s\n',F);
+      end
+      in = load(F,'T');
+      T = in.T;
+      return;
+   else
+      error(['tDCS:' mfilename ':MissingFile'],...
+         '<strong>[TDCS]:</strong> Could not find file: %s\n',F);
+   end
 end
 
 maintic = tic;
