@@ -19,6 +19,7 @@ pars.WORKSPACE = '2017-07-20_tDCS Workspace.mat';
 % pars.SPIKE_SERIES = '2017-11-22_Updated Spike Series.mat';
 pars.SPIKE_SERIES = '2020-03-17_Spike-Trains-Table.mat';
 pars.DS_TABLE = '2020-03-17_DS-Table.mat';
+pars.MASK_TABLE = '2020-03-17_Mask-Table.mat';
 pars.LFP = '2017-07-13_LFP Data.mat';
 pars.DATA_STRUCTURE = '2017 TDCS Data Structure Organization.mat';
 pars.EPOCH_DATA = '2017-06-17_Concatenated Epoch Data.mat';
