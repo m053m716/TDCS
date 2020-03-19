@@ -2,6 +2,8 @@ function varargout = ShadedErrorPlot(varargin)
 
 pars = struct;
 
+pars.StandardDeviations = 1;
+
 pars.DisplayName = '';
 pars.Tag = '';
 pars.UserData = [];

@@ -9,6 +9,23 @@ pars = parseParameters('RefactorDuration',varargin{:});
 if nargin < 1
    in = load(fullfile(pars.TANK,defs.FileNames('DATA_STRUCTURE')));
    F = in.F;
+elseif ischar(F)
+   if exist(F,'file')==2
+      in = load(F,'T');
+      T = in.T;
+      return;
+   elseif exist(F,'dir')==7
+      in = load(fullfile(F,defs.FileNames('MASK_TABLE')),'T');
+      T = in.T;
+      return;
+   else
+      warning(['tDCS:' mfilename ':BadFileInfo'],...
+         ['\n\t->\t<strong>[tDCS]:</strong> Could not parse '...
+         'file info for string: %s (using defaults instead)\n'],F);
+      in = load(fullfile(defs.FileNames('DIR'),defs.FileNames('MASK_TABLE')),'T');
+      T = in.T;
+      return;
+   end
 end
 
 maintic = tic;

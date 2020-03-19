@@ -37,9 +37,13 @@ for i = 1:numel(pars.MARKUP_KEY)
 end
 
 % Timing info
-pars.EPOCH_NAMES = {'BASAL','STIM','POST1','POST2','POST3','POST4'}; % Labels of epochs
-pars.EPOCH_ONSETS = [5  15 35 50 65 80]; % (Values in minutes)
-pars.EPOCH_OFFSETS = [15 35 50 65 80 95]; % (Values in minutes)
+% pars.EPOCH_NAMES = {'BASAL','STIM','POST1','POST2','POST3','POST4'}; % Labels of epochs
+% pars.EPOCH_ONSETS = [5  15 35 50 65 80]; % (Values in minutes)
+% pars.EPOCH_OFFSETS = [15 35 50 65 80 95]; % (Values in minutes)
+pars.EPOCH_NAMES = {'PRE','STIM','POST'}; % epoch labels
+pars.EPOCH_ONSETS = [5 15 35]; % minutes
+pars.EPOCH_OFFSETS = [15 35 50]; % minutes
+pars.EPOCH_MASK_INDICES = {1:600,601:1800,1801:2700}; % For anything binned in seconds
 pars.EPOCH_COL = defs.EpochColors(pars.EPOCH_NAMES{:});
 
 % Path info

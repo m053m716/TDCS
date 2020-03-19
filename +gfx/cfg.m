@@ -1,5 +1,5 @@
 function varargout = cfg(varargin)
-%% CFG  param = gfx.cfg('param_name'); 
+%CFG  param = gfx.cfg('param_name'); 
 %
 %  param = gfx.CFG('ParamName');
 %  [param1,param2,...] = gfx.CFG('ParamName1','ParamName2',...);
@@ -7,7 +7,7 @@ function varargout = cfg(varargin)
 %
 % Configure parameters for +gfx package here.
 
-%% CHANGE CONFIGURATION HERE
+% CHANGE CONFIGURATION HERE
 p = struct;
 p.ShadedError_Marker = 'none';
 p.ShadedError_LineWidth = 2;
@@ -23,7 +23,7 @@ p.SignificanceLine_HighVal = 0.9;
 p.SignificanceLine_LowVal = 0.875;
 p.SignificanceLine_MinDiffScale = 0.1; % Scalar for min diff (for adding end of bracket)
 
-%% Return variable output (DO NOT CHANGE)
+% Return variable output (DO NOT CHANGE)
 if nargin < 1
    varargout = {p};
 else

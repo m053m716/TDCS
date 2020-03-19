@@ -1,6 +1,9 @@
 function addHelperRepos(paths)
 % ADDHELPERREPOS  Adds all fields of paths to Matlab search path
 
+if nargin < 1
+   paths = defs.Repos();
+end
 
 f = fieldnames(paths);
 for iF = 1:numel(f)
