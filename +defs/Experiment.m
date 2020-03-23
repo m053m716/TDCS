@@ -44,7 +44,7 @@ end
 pars.EPOCH_NAMES = {'PRE','STIM','POST'}; % epoch labels
 pars.EPOCH_ONSETS = [5 15 35]; % minutes
 pars.EPOCH_OFFSETS = [15 35 50]; % minutes
-pars.EPOCH_MASK_INDICES = {1:600,601:1800,1801:2700}; % For anything binned in seconds
+pars.EPOCH_MASK_INDICES = {301:900,901:2100,2101:3000}; % For anything binned in seconds
 pars.EPOCH_COL = defs.EpochColors(pars.EPOCH_NAMES{:});
 
 % Path info

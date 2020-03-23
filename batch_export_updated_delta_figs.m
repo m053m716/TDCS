@@ -12,6 +12,7 @@ T_mask = fullMask2ChannelEpochMask(T,FR_table); % "By-epoch" cell of mask tables
 
 % Compute change in firing rate
 dFR_table = compute_delta_FR(FR_table,T_mask); % fast ( < 1 second )
+clear FR_table T
 
 %
 batch_export_delta_Rate_Figs(dFR_table);

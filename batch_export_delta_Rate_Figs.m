@@ -59,7 +59,7 @@ if iscell(dFR_table)
          if exist(pars.OUT_FOLDER,'dir')==0
             mkdir(pars.OUT_FOLDER);
          end
-         expAI(fig,fullfile(pars.OUT_FOLDER,fname));
+%          expAI(fig,fullfile(pars.OUT_FOLDER,fname));
          savefig(fig,fullfile(pars.OUT_FOLDER,[fname '.fig']));
          saveas(fig,fullfile(pars.OUT_FOLDER,[fname '.png']));
          delete(fig);
@@ -82,17 +82,17 @@ YData = YData(:);
 MaskData = cell2mat(dFR_table.mask);
 MaskData = MaskData(:);
 YData(MaskData) = [];
-YData = YData.';
 XData(MaskData) = [];
-XData = XData.';
-XData = XData + randn(1,numel(XData)).*pars.XJITTER;
-XData = XData ./ 60 + 5; % Account for initial offset
 
 dispName = sprintf('%s-%s (%s)',...
    pars.INTENSITY_LABEL{pars.CONDITION_ID},...
    pars.CURRENT_LABEL{pars.CUR_ID},...
    pars.EPOCH_NAMES{pars.EPOCH_ID});
 
+% YData = YData.';
+% XData = XData.';
+% XData = XData + randn(1,numel(XData)).*pars.XJITTER;
+% XData = XData ./ 60 + 5; % Account for initial offset
 % line(ax,XData,YData,...
 %    'LineStyle','none',...
 %    'Marker','o',...
@@ -100,6 +100,11 @@ dispName = sprintf('%s-%s (%s)',...
 %    'MarkerFaceColor',pars.COLOR,...
 %    'MarkerSize',pars.MARKER_SIZE,...
 %    'DisplayName',dispName);
+
+YData = YData.';
+XData = XData.';
+XData = XData + randn(1,numel(XData)).*pars.XJITTER;
+XData = XData ./ 60; % Account for initial offset (minutes)
 scatter(ax,XData,YData,...
    'Marker','o',...
    'MarkerEdgeColor','none',...
@@ -108,7 +113,10 @@ scatter(ax,XData,YData,...
    'MarkerFaceAlpha',0.25,...
    'DisplayName',dispName);
 
-
+% XData = XData ./ 60; % Account for initial offset
+% boxplot(ax,YData,XData,...
+%    'BoxStyle','filled',...
+%    'Colors',pars.COLOR);
    
 
 end

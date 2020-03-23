@@ -34,8 +34,9 @@ if nargin < 3
          ['\n\t->\t<strong>[TDCS]:</strong> ' ...
          'If only 1 input argument, `FR_table` must be cell array.\n']);
    end
-   vec = 1:600;
-   avg = cell2mat(cellfun(@(x,m)median(sqrt(x(vec(m(vec)))),2),...
+   vec = defs.Experiment('EPOCH_MASK_INDICES');
+   vec = vec{1}-vec{1}(1)+1;
+   avg = cell2mat(cellfun(@(x,m)median(sqrt(x(vec(~m(vec)))),2),...
       FR_table{1}.Rate,T_mask{1}.mask,'UniformOutput',false));
 elseif ~iscell(avg)
    avg = num2cell(avg);
