@@ -7,8 +7,18 @@ end
 
 f = fieldnames(paths);
 for iF = 1:numel(f)
-   if ~contains(path,paths.(f{iF}))
-      addpath(genpath(paths.(f{iF})));
+   pathname = fullfile(paths.(f{iF}));
+   if ~contains(path,pathname)
+      addpath(genpath(pathname));
+   end
+   % Added this part for convenience with defs.Repos mismatch between lab
+   % workstation and home desktop path setup
+   if ~contains(path,pathname)
+      p = strsplit(pathname,filesep);
+      pathname = strjoin(p(2:end),filesep);
+      if ~contains(path,pathname)
+         addpath(genpath(pathname));
+      end
    end
 end
 
