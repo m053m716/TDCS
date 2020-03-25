@@ -23,6 +23,9 @@ pars.MASK_TABLE = '2020-03-17_Mask-Table.mat';
 pars.RATE_SERIES_TABLE = '2020-03-17_Rate-Table.mat';
 pars.SPIKE_SERIES_TABLE = '2020-03-23_Full-Spike-Series.mat';
 pars.SPIKE_SERIES_FORMATTED = '2020-03-24_Full-Spike-Series-Formatted.mat';
+pars.LFP_TABLE = '2020-03-25_LFP-Table.mat';
+pars.LFP_SPREADSHEET = '2020-03-25_LFP-Table.csv';
+
 pars.LFP = '2017-07-13_LFP Data.mat';
 pars.DATA_STRUCTURE = '2017 TDCS Data Structure Organization.mat';
 pars.EPOCH_DATA = '2017-06-17_Concatenated Epoch Data.mat';
