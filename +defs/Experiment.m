@@ -48,7 +48,8 @@ pars.EPOCH_MASK_INDICES = {301:900,1201:2100,2401:3000}; % For anything binned i
 pars.EPOCH_COL = defs.EpochColors(pars.EPOCH_NAMES{:});
 
 % Path info
-pars.PROCESSED_TANK = 'P:\Rat\tDCS';
+% pars.PROCESSED_TANK = 'P:\Rat\tDCS';
+pars.PROCESSED_TANK = defs.FileNames('DIR');
 pars.ACC_TAG = '_Accelerometry_Data.mat';
 pars.DS_FOLDER = '_DS';
 pars.DS_TAG = '*DS*.mat';
