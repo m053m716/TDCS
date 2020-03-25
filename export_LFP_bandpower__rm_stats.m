@@ -61,6 +61,7 @@ else
 end
 
 rmsdata = load(fullfile(block,sprintf(pars.RMS_MASK_FILE,name)),'mask');
+F.conditionID = ceil(F.conditionID/2);
 T = extract_LFP_bands(lfp.data,rmsdata.mask,fs,F,pars);
 
 end
