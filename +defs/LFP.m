@@ -21,6 +21,7 @@ pars.LFP_STATS_FILE = defs.FileNames('LFP_STATS_FILE');
 pars.LFP_RM_STATS_FILE = defs.FileNames('LFP_RM_STATS_FILE');
 pars.LFP_SPECTRA_FIG_FILE = ''; % To export, set this non-empty
 pars.WLEN = defs.SlidingPower('WLEN');
+pars.EPOCH_MASK_INDICES = defs.Experiment('EPOCH_MASK_INDICES');
 pars.NSAMPLES_COV = 61; % How many samples "forward" and "backward" to use to estimate covariance matrix
 pars.DESCRIPTION = struct(...
    'P', struct(...

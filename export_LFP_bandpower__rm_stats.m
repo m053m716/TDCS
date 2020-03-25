@@ -60,49 +60,7 @@ else
    fprintf(1,'\b\b\b\b\b\b\b\b\b\bcomputing...');
 end
 
-
-% Do not apply the mask yet; first compute PSD then apply mask. Note: we
-% must subtract by 1 from window length (compared to the power spectrum
-% estimate) in order to get the correct number of window points)
-[~,f,t,ps] = spectrogram(lfp.data,pars.WLEN-1,0,pars.FREQS,fs,'power');
-
-fprintf(1,'\b\b\b\b\b\b\b\b\b\b\b\baveraging...');
-
-% Next, load mask and make sure we remove parts that are unwanted
 rmsdata = load(fullfile(block,sprintf(pars.RMS_MASK_FILE,name)),'mask');
-
-ps_ = log(ps(:,~rmsdata.mask)); % Remove mask samples here (do not save version with removed samples)
-t_ = t(1,~rmsdata.mask)./60; % Convert to minutes for comparison purposes
-
-nEpoch = numel(pars.EPOCH_NAMES);
-nBand = numel(pars.BANDS);
-
-BandID   = (1:nBand).';
-AnimalID = ones(nBand,1).*F.animalID;
-ConditionID = ones(nBand,1).*F.conditionID;
-ConditionID = ceil(ConditionID/2); % Only have 3 levels of ConditionID
-CurrentID = ones(nBand,1).*F.currentID;
-T = table(AnimalID,ConditionID,CurrentID,BandID);
-for i = 1:nEpoch
-   T = [T, table(nan(nBand,1),'VariableNames',pars.EPOCH_NAMES(i))]; %#ok<AGROW>
-end
-
-for i = 1:nBand
-   fc = pars.FC.(pars.BANDS{i});
-   f_idx = (f>=fc(1)) & (f<=fc(2));
-   ps_f = ps_(f_idx,:); % Note: ps_ is log-transformed, has mask applied
-   p = mean(ps_f,1);    % Keep this for assignment
-   
-   for k = 1:nEpoch
-      epochName = pars.EPOCH_NAMES{k};
-      t_idx = (t_>=pars.EPOCH_ONSETS(k)) & ...
-              (t_<=pars.EPOCH_OFFSETS(k));
-      T.(epochName)(i) = mean(p(t_idx));
-   end
-end
-
-fprintf(1,'\b\b\b\b\b\b\b\b\b\b\b\b<strong>complete</strong>\n');
-
-
+T = extract_LFP_bands(lfp.data,rmsdata.mask,fs,F,pars);
 
 end

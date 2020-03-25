@@ -1,18 +1,14 @@
-function ax = batch_export_delta_Rate_Figs(dFR_table,varargin)
+function ax = batch_export_delta_Rate_Figs(T,varargin)
 %BATCH_EXPORT_DELTA_RATE_FIGS  Export figures regarding delta-firing rate
 %
 %  batch_export_delta_Rate_Figs(dFR_table,'NAME',value,...);
-%  --> dFR_table : Output by `compute_delta_FR`
-%     * Should have 3 cells: 
-%        + {1,1} -- 'BASAL' or 'PRE' (10 mins)
-%        + {1,2} -- 'STIM'           (20 mins)
-%        + {1,3} -- 'POST'           (15 mins)
+%  --> T : Output by `compute_delta_FR`
 %
 %  --> <'NAME',value> pair syntax for setting optional parameters
 %     * Default parameters are loaded from `defs.WholeTrialFigs`
 
 pars = parseParameters('Export_Delta_Figs',varargin{:});
-if iscell(dFR_table)
+if istable(T)
    curVec = [-1 1];
    for iIntensity = 1:3
       for iPolarity = 1:2
@@ -32,13 +28,17 @@ if iscell(dFR_table)
          ylabel(ax,'\Delta \surd (FR)', 'FontName','Arial','FontSize',14,'Color','k'); 
          title(ax,figName,'FontName','Arial','FontSize',16,'Color','k');
          EPOCH_COLS = [];
-         for iEpoch = 1:numel(dFR_table)
-            T = dFR_table{iEpoch};
-            T = T(...
-               T.CurrentID==curVec(iPolarity) & ...
-               T.ConditionID==iIntensity,:);
+         idx = T.CurrentID==curVec(iPolarity) & T.ConditionID==iIntensity;
+         R = T.delta_sqrt_Rate(idx);
+         M = T.mask(idx);
+         for iEpoch = 1:numel(pars.EPOCH_TS)
             c = pars.CONDITION_CUR_COL{iIntensity,iPolarity}.*pars.EPOCH_COL_FACTOR(iEpoch);
-            ax = batch_export_delta_Rate_Figs(T,...
+            vec = pars.EPOCH_TS{iEpoch};
+            r = cellfun(@(C)C(vec),R,'UniformOutput',false);
+            mask = cellfun(@(C)C(vec),M,'UniformOutput',false);
+            data = struct('r',r,'mask',mask);
+            
+            ax = batch_export_delta_Rate_Figs(data,...
                'EPOCH_TS',pars.EPOCH_TS{iEpoch},...
                'CONDITION_ID',iIntensity,...
                'EPOCH_ID',iEpoch,...
@@ -59,7 +59,7 @@ if iscell(dFR_table)
          if exist(pars.OUT_FOLDER,'dir')==0
             mkdir(pars.OUT_FOLDER);
          end
-%          expAI(fig,fullfile(pars.OUT_FOLDER,fname));
+         expAI(fig,fullfile(pars.OUT_FOLDER,[fname '.eps']));
          savefig(fig,fullfile(pars.OUT_FOLDER,[fname '.fig']));
          saveas(fig,fullfile(pars.OUT_FOLDER,[fname '.png']));
          delete(fig);
@@ -75,11 +75,11 @@ else
    ax = pars.AX;
 end
 
-YData = cell2mat(dFR_table.delta_sqrt_Rate);
+YData = vertcat(T.r);
 XData = repmat(pars.EPOCH_TS,size(YData,1),1);
 XData = XData(:);
 YData = YData(:);
-MaskData = cell2mat(dFR_table.mask);
+MaskData = vertcat(T.mask);
 MaskData = MaskData(:);
 YData(MaskData) = [];
 XData(MaskData) = [];
@@ -92,7 +92,7 @@ dispName = sprintf('%s-%s (%s)',...
 % YData = YData.';
 % XData = XData.';
 % XData = XData + randn(1,numel(XData)).*pars.XJITTER;
-% XData = XData ./ 60 + 5; % Account for initial offset
+% XData = XData ./ 60; % Account for initial offset
 % line(ax,XData,YData,...
 %    'LineStyle','none',...
 %    'Marker','o',...
@@ -110,7 +110,7 @@ scatter(ax,XData,YData,...
    'MarkerEdgeColor','none',...
    'MarkerFaceColor',pars.COLOR,...
    'SizeData',pars.MARKER_SIZE,...
-   'MarkerFaceAlpha',0.25,...
+   'MarkerFaceAlpha',pars.MARKER_FACE_ALPHA,...
    'DisplayName',dispName);
 
 % XData = XData ./ 60; % Account for initial offset

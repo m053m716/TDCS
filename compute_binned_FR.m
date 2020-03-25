@@ -1,8 +1,8 @@
-function FR_table = compute_binned_FR(T_spiketrain,T_rms)
+function T = compute_binned_FR(T)
 %COMPUTE_BINNED_FR  Computes FR in 1-second bins over duration of train
 %
-%  FR_table = compute_binned_FR(T_spiketrain);
-%  --> T_spiketrain : Table with spike trains in 'Train' variable as sparse
+%  T = compute_binned_FR(T);
+%  --> T : Table with spike trains in 'Train' variable as sparse
 %                     vectors sampled at rate in 'FS' variable.
 %     --> Loaded using 
 %        >> T = loadSpikeTrains_Table('D:\MATLAB\Data\tDCS');
@@ -15,27 +15,21 @@ function FR_table = compute_binned_FR(T_spiketrain,T_rms)
 %                    * Channel, and 
 %                    * Rate
 
-% Iterate if it is a table
-if iscell(T_spiketrain)
-   FR_table = cell(size(T_spiketrain));
-   maintic = tic;
-   for i = 1:numel(T_spiketrain)
-      fprintf(1,'<strong>Epoch:</strong> %g\n',i);
-      FR_table{i} = compute_binned_FR(T_spiketrain{i},T_rms);
-   end
-   toc(maintic);
-   return;
+if ~ismember(T.Properties.VariableNames,'Train')
+   error(['tDCS:' mfilename ':WrongTable'],...
+      ['\n\t->\t<strong>[COMPUTE_BINNED_FR]:</strong> ' ...
+      'Missing `Train` Variable (check this table is at correct step)\n']);
 end
 
+% Iterate if it is a table
 subtic = tic;
-meta = T_rms(:,1:4);
-tmp = innerjoin(T_spiketrain,meta);
-N = size(tmp,1);
-Rate = cell(N,1);
+N = size(T,1);
 for i = 1:N
-   Rate{i} = histcounts(find(tmp.Train{i}),1:tmp.FS(i):size(tmp.Train{i},1));
+   T.Train{i} = histcounts(find(T.Train{i}),1:T.FS(i):size(T.Train{i},1));
+   T.Train{i} = T.Train{i}(1:numel(T.mask{i}));
 end
-FR_table = [tmp(:,[1:2,6:8]), table(Rate)];
+idx = strcmp(T.Properties.VariableNames,'Train');
+T.Properties.VariableNames{idx} = 'Rate';
 fprintf(1,'\t->\t');
 toc(subtic);
 
