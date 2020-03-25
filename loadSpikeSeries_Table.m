@@ -8,6 +8,16 @@ if nargin < 1
 end
 
 pars = parseParameters('FileNames',varargin{:});
+seriesFile = fullfile(pars.DIR,pars.SPIKE_SERIES_TABLE);
+if exist(seriesFile,'file')==2
+   fprintf(1,'\t->\t<strong>Found</strong> Spike-Series file\n');
+   fprintf(1,'\t\t->\t(Loading...)');
+   in = load(seriesFile,'T');
+   T = in.T;
+   fprintf(1,'\bComplete)\n');
+   return;
+end
+
 
 if numel(F) > 1
    T = table.empty;

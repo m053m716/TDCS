@@ -8,7 +8,8 @@ pars = struct;
 % DEFAULTS
 pars.DIR = 'P:\Rat\tDCS';                       % Tank path
 pars.FILE = defs.FileNames('RMS_MASK_FILE');    % Filename of RMS mask file
-pars.BIN  = defs.Experiment('DS_BIN_DURATION');  % Seconds
+pars.BIN  = defs.Experiment('DS_BIN_DURATION'); % Seconds
+pars.SKIP_IF_FILE_PRESENT = true;  % Do not overwrite old file if it exists
 
 % FOR SLIDINGPOWER
 pars.RMS = defs.SlidingPower();

@@ -34,6 +34,14 @@ end
 
 block = fullfile(pars.DIR,F.name,F.base);
 output = sprintf(pars.FILE,F.base);
+% Check to see if RMS file exists; if it does, then skip export
+if (exist(fullfile(block,output),'file')==2) && pars.SKIP_IF_FILE_PRESENT
+   fprintf(1,...
+      '\t->\t<strong>%s</strong>: RMS mask already exists.\n',F.base);
+   fprintf(1,'\t\t->\t(skipped)\n');
+   return;
+end
+
 
 f = dir(fullfile(block,...
    [F.base pars.INFILE_TYPE_TAG],[F.base '*' pars.OUTFILE_DELIM '*.mat']));
@@ -88,8 +96,15 @@ end
 mask = s > pars.RMS_THRESH;
 % Top row is where mask goes from LOW to HIGH
 onsets = find([false, diff(mask)>0]);
+if isempty(onsets)
+   onsets = 1;
+end
+
 % Bot row is where mask goes from HIGH to LOW
 offsets = find([diff(mask)<0, false]);
+if isempty(offsets)
+   offsets = numel(mask);
+end
 
 % Make sure the beginning and end of each pair make sense
 if onsets(1) > offsets(1)
@@ -109,13 +124,13 @@ artifact(artifact <= 0) = 1;
 if artifact(1,1) == artifact(2,1)
    artifact(1,1) = 1;
 end
-nmax = size(m,'data',2); %#ok<GTARG>
+nmax = size(m,'data',2);  %#ok<GTARG>
 artifact(artifact > nmax) = nmax;
 if artifact(1,end) == artifact(2,end)
    artifact(2,end) = nmax;
 end
 fprintf(1,'saving...\n');
-save(fullfile(block,output),'s','n','mask','artifact','-v7.3');
+save(fullfile(block,output),'s','n','mask','artifact','pars','-v7.3');
 fprintf(1,'\b\b\b\b\b\b\b\b\b\bcomplete\n');
 
 end

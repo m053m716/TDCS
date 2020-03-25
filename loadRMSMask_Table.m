@@ -7,8 +7,7 @@ function T = loadRMSMask_Table(F,varargin)
 
 pars = parseParameters('RefactorDuration',varargin{:});
 if nargin < 1
-   in = load(fullfile(pars.TANK,defs.FileNames('DATA_STRUCTURE')));
-   F = in.F;
+   F = loadOrganizationData;
 elseif ischar(F)
    if exist(F,'file')==2
       in = load(F,'T');
@@ -30,6 +29,7 @@ end
 
 maintic = tic;
 Name = {F.name}.';
+BlockID = cellfun(@(C)str2double(C((regexp(C,'-','once')+1):end)),Name);
 AnimalID = [F.animalID].';
 ConditionID = ceil([F.conditionID].'/2);
 CurrentID = [F.currentID].';
@@ -37,11 +37,14 @@ N = numel(F);
 mask = cell(N,1);
 h = waitbar(0,'Organizing RMS mask...');
 for ii = 1:N
+   if ~F(ii).included
+      continue;
+   end
    blockDir = F(ii).block;
    name = F(ii).base;
    maskFile = fullfile(blockDir,sprintf(pars.FILE,name));
    if exist(maskFile,'file')==2
-      in = load(maskFile,'mask');
+      in = load(maskFile,'mask','pars');
    else
       warning(['tDCS:' mfilename ':MissingFile'],...
          ['\n\t->\t<strong>[tDCS]:</strong> ' ...
@@ -59,7 +62,16 @@ for ii = 1:N
    waitbar(ii/N,h);
 end
 
-T = table(Name,AnimalID,ConditionID,CurrentID,mask);
+T = table(BlockID,AnimalID,ConditionID,CurrentID,mask);
+T.Properties.Description = 'Where `mask` is HIGH (1), signal is artifact.';
+T.Properties.VariableDescriptions = {...
+   'BlockID:      Identifier for recording session'; ...
+   'AnimalID:     Identifier for rat'; ...
+   'ConditionID:  Identifier for intensity {1: 0.0mA, 2: 0.2mA, 3: 0.4mA}'; ...
+   'CurrentID:    Identifier for polarity {-1: ''Anodal'', 1: ''Cathodal''}';...
+   'mask:         Vector for binned samples; [0: include, 1: exclude]' ...
+   };
+T.Properties.UserData = in.pars;
 delete(h);
 toc(maintic);
 
