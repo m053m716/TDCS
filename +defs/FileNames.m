@@ -6,8 +6,8 @@ function varargout = FileNames(varargin)
 
 pars = struct;
 % DEFAULTS
-% pars.DIR = 'P:\Rat\tDCS';
-pars.DIR = 'D:\MATLAB\Data\tDCS';
+pars.DIR = 'P:\Rat\tDCS';
+% pars.DIR = 'D:\MATLAB\Data\tDCS';
 pars.DATABASE = 'Stats'; % Name of SQLExpress Statistics server on CPL-VISION
 pars.DATABASE_LFP = struct('Atomic','Stats.dbo.LFPid','Key','Stats.dbo.LFPkey'); 
 pars.OUTPUT_FIG_DIR = 'J:\Rat\tDCS\2020_Figures';
