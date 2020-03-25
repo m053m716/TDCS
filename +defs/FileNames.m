@@ -35,7 +35,7 @@ pars.SPIKE_DIR_TAG = '_wav-sneo_CAR_Spikes';
 pars.DS_DIR_TAG = '_DS';
 
 % SPECIFIC FILES
-pars.RMS_MASK_FILE = '%s_RMS-Mask.mat';
+pars.RMS_MASK_FILE = '%s_RMS-Mask_30-sec.mat';
 pars.LFP_FILE = '%s_LFP.mat';
 pars.LFP_STATS_FILE = 'LFP_BandPower_Stats';
 pars.LFP_RM_STATS_FILE = 'LFP_RM_BandPower_Stats';

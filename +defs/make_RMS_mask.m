@@ -8,7 +8,7 @@ pars = struct;
 % DEFAULTS
 pars.DIR = 'P:\Rat\tDCS';                       % Tank path
 pars.FILE = defs.FileNames('RMS_MASK_FILE');    % Filename of RMS mask file
-pars.BIN  = 1;  % Seconds
+pars.BIN  = defs.Experiment('DS_BIN_DURATION');  % Seconds
 
 % FOR SLIDINGPOWER
 pars.RMS = defs.SlidingPower();
@@ -21,6 +21,7 @@ pars.OUTFILE_TYPE_TAG = '_DS';
 pars.INFILE_CHANNEL_TOKEN = '_Ch_';
 pars.INFILE_DELIM = '_DS_';
 pars.OUTFILE_DELIM = '_REF_';
+pars.RAW_TAG = defs.Experiment('RAW_TAG');
 
 if nargin < 1
    varargout = {pars};   

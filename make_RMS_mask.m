@@ -12,6 +12,10 @@ function make_RMS_mask(F,varargin)
 %  --> Uses `defs.make_RMS_mask()` to get `pars`
 %     --> Modifies fields of `pars` using `'NAME',value,...` syntax
 
+if nargin < 1
+   F = loadOrganizationData;
+end
+
 % Iterate on struct array F
 if numel(F) > 1
    for i = 1:numel(F)
@@ -50,10 +54,14 @@ end
 fprintf(1,'\t\t->\tExtracting <strong>RMS-MASK</strong> for %s...',F.base);
 
 t = (0:(numel(data)-1))/fs;
+pars.RMS.WLEN  = round(pars.BIN * fs);
+if rem(pars.RMS.WLEN,2)==0
+   pars.RMS.WLEN = pars.RMS.WLEN + 1;
+end
 [s,n] = SlidingPower(data,pars.RMS); % Computes RMS in sliding 1-second window
 
 % Get amplifier sampling rate to normalize sample indices.
-raw = dir(fullfile(F.wav.raw,[F.base '_Raw_*.mat']));
+raw = dir(fullfile(F.wav.raw,[F.base pars.RAW_TAG]));
 m = matfile(fullfile(raw(1).folder,raw(1).name));
 if isprop(m,'fs')
    FS = m.fs;

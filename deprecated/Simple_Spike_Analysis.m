@@ -219,7 +219,7 @@ for ii = 1:nFiles
    
    n = numel(tPeak);
    rt = n./dur;
-   lvr = LvR(tPeak);
+   lvr = eqn.LvR(tPeak);
    
    Channel(ii) = ch;
 %    Cluster(ii) = cl;

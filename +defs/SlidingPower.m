@@ -6,8 +6,14 @@ function varargout = SlidingPower(varargin)
 
 pars = struct;
 % DEFAULTS
-pars.WLEN = 1001;
-pars.OV = 0;
+pars.OV = 0; % # of samples to overlap (0 -- no overlap)
+
+% Window length is parsed from `defs.Experiment` (main parameters)
+[sec,hz] = defs.Experiment('DS_BIN_DURATION','FS_DECIMATED');
+pars.WLEN = round(sec*hz); % Samples
+if rem(pars.WLEN,2)==0
+   pars.WLEN = pars.WLEN + 1; % Ensure that it's odd
+end
 
 if nargin < 1
    varargout = {pars};   

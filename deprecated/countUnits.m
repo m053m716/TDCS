@@ -128,7 +128,7 @@ for iN = 1:ntotal
     Duration(iN) = numel(temp.peak_train)/temp.pars.FS;
     NumSpikes(iN) = numel(find(temp.peak_train));
     Rate(iN) = NumSpikes(iN)/Duration(iN);
-    Regularity(iN) = LvR(find(temp.peak_train)/temp.pars.FS);
+    Regularity(iN) = eqn.LvR(find(temp.peak_train)/temp.pars.FS);
 end
 C = table(Name,File,Status,NumSpikes,Duration,Rate,Regularity);
 

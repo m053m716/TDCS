@@ -46,6 +46,8 @@ pars.EPOCH_ONSETS = [5 20 40]; % minutes
 pars.EPOCH_OFFSETS = [15 35 50]; % minutes
 pars.EPOCH_MASK_INDICES = {301:900,1201:2100,2401:3000}; % For anything binned in seconds
 pars.EPOCH_COL = defs.EpochColors(pars.EPOCH_NAMES{:});
+pars.DS_BIN_DURATION = 30; % Seconds (bin-width for LFP power or spike rate estimation)
+pars.FS_DECIMATED = 1000; % (Hz); decimated sample rate
 
 % Path info
 % pars.PROCESSED_TANK = 'P:\Rat\tDCS';
@@ -53,6 +55,7 @@ pars.PROCESSED_TANK = defs.FileNames('DIR');
 pars.ACC_TAG = '_Accelerometry_Data.mat';
 pars.DS_FOLDER = '_DS';
 pars.DS_TAG = '*DS*.mat';
+pars.RAW_TAG = '_Raw_*.mat';
 
 % General: for figures
 pars.TOP_AXES = [0.15 0.60 0.75 0.25];
