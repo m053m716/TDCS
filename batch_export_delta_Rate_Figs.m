@@ -21,9 +21,7 @@ if istable(T)
                'Position',pars.FIG_POS);
          ax = axes(fig,'FontName','Arial',...
             'XColor','k','YColor','k',...
-            'NextPlot','add',...
-            'XLim',pars.XLIM,...
-            'YLim',pars.YLIM);
+            'NextPlot','add');
          xlabel(ax,'Time (min)','FontName','Arial','FontSize',14,'Color','k');
          ylabel(ax,'\Delta \surd (FR)', 'FontName','Arial','FontSize',14,'Color','k'); 
          title(ax,figName,'FontName','Arial','FontSize',16,'Color','k');
@@ -33,13 +31,13 @@ if istable(T)
          M = T.mask(idx);
          for iEpoch = 1:numel(pars.EPOCH_TS)
             c = pars.CONDITION_CUR_COL{iIntensity,iPolarity}.*pars.EPOCH_COL_FACTOR(iEpoch);
-            vec = pars.EPOCH_TS{iEpoch};
-            r = cellfun(@(C)C(vec),R,'UniformOutput',false);
-            mask = cellfun(@(C)C(vec),M,'UniformOutput',false);
+            [vec,ts] = getEpochSampleIndices(T(idx,:),iEpoch);
+            r = cellfun(@(C,v)C(v),R,vec,'UniformOutput',false);
+            mask = cellfun(@(C,v)C(v),M,vec,'UniformOutput',false);
             data = struct('r',r,'mask',mask);
             
             ax = batch_export_delta_Rate_Figs(data,...
-               'EPOCH_TS',pars.EPOCH_TS{iEpoch},...
+               'EPOCH_TS',ts,...
                'CONDITION_ID',iIntensity,...
                'EPOCH_ID',iEpoch,...
                'CUR_ID',iPolarity,...
@@ -51,17 +49,22 @@ if istable(T)
 %             'FontSize',12,'FontName','Arial','TextColor','black');
          addEpochLabelsToAxes(ax,...
             'LABEL_HEIGHT',15,...
+            'LABEL_OFFSET',20,...
+            'LABEL_FIXED_Y',-120,...
             'EPOCH_COL',EPOCH_COLS,...
             'TEXT_COL',[0 0 0]);
+         xlim(ax,pars.XLIM);
+         ylim(ax,pars.YLIM);
+         ax.YTick = [-100 -50 0 50 100];
          fname = sprintf('%s-%s',...
                         pars.INTENSITY_FNAME{iIntensity},...
                         pars.CURRENT_FNAME{iPolarity});
          if exist(pars.OUT_FOLDER,'dir')==0
             mkdir(pars.OUT_FOLDER);
          end
-         expAI(fig,fullfile(pars.OUT_FOLDER,[fname '.eps']));
-         savefig(fig,fullfile(pars.OUT_FOLDER,[fname '.fig']));
-         saveas(fig,fullfile(pars.OUT_FOLDER,[fname '.png']));
+         expAI(fig,fullfile(pars.OUT_FOLDER,[fname pars.TAG '.eps']));
+         savefig(fig,fullfile(pars.OUT_FOLDER,[fname pars.TAG '.fig']));
+         saveas(fig,fullfile(pars.OUT_FOLDER,[fname pars.TAG '.png']));
          delete(fig);
       end
    end
@@ -76,7 +79,7 @@ else
 end
 
 YData = vertcat(T.r);
-XData = repmat(pars.EPOCH_TS,size(YData,1),1);
+XData = cell2mat(pars.EPOCH_TS);
 XData = XData(:);
 YData = YData(:);
 MaskData = vertcat(T.mask);
@@ -104,7 +107,7 @@ dispName = sprintf('%s-%s (%s)',...
 YData = YData.';
 XData = XData.';
 XData = XData + randn(1,numel(XData)).*pars.XJITTER;
-XData = XData ./ 60; % Account for initial offset (minutes)
+XData = XData ./ 60; % Convert to minutes
 scatter(ax,XData,YData,...
    'Marker','o',...
    'MarkerEdgeColor','none',...

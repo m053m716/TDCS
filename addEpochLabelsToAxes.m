@@ -15,22 +15,30 @@ pars = parseParameters('EpochLabels',varargin{:});
 
 yMin = get(gca,'YLim')-pars.LABEL_OFFSET;
 yMax = yMin(2);
-yMin = yMin(1);
+if isempty(pars.LABEL_FIXED_Y)
+   yMin = yMin(1);
+else
+   yMin = pars.LABEL_FIXED_Y;
+end
 ylim(gca,[yMin, yMax]);
 hg = hggroup(ax,'Tag','Epochs','DisplayName','Epoch Info');
-for iL = 1:numel(pars.EPOCH_ONSETS)
+nEpoch = numel(pars.EPOCH_ONSETS);
+xt = [];
+for iL = 1:nEpoch
    rx = pars.EPOCH_ONSETS(iL);
    ry = yMin;
    rw = pars.EPOCH_OFFSETS(iL) - pars.EPOCH_ONSETS(iL);
    rh = pars.LABEL_HEIGHT;
    rectangle(hg,'Position',[rx,ry,rw,rh],'Curvature',pars.RECT_CURVATURE,...
       'FaceColor',pars.EPOCH_COL(iL,:),'EdgeColor','none');
-   if iL > 1
-      line(hg,[rx,rx],...
+   if (iL > 1) && pars.ADD_EPOCH_DELIMITER_LINES
+      lx = (pars.EPOCH_ONSETS(iL) + pars.EPOCH_OFFSETS(iL-1))/2;
+      xt = [xt, pars.EPOCH_ONSETS(iL), pars.EPOCH_OFFSETS(iL-1)]; %#ok<AGROW>
+      line(hg,[lx,lx],...
          [ry yMax], ...
          'Color',pars.LINE_COL,...
-         'LineStyle','-.',...
-         'LineWidth',2);
+         'LineStyle',pars.LINE_STYLE,...
+         'LineWidth',pars.LINE_WIDTH);
    end
    tx = rx + (rw/2);
    ty = ry + (rh/2);
@@ -40,9 +48,7 @@ for iL = 1:numel(pars.EPOCH_ONSETS)
       'VerticalAlignment','middle');
 end
 hg.Annotation.LegendInformation.IconDisplayStyle = 'off';
-
-xtick = intersect(pars.EPOCH_ONSETS,pars.EPOCH_OFFSETS);
 set(gca,'XLim',[min(pars.EPOCH_ONSETS),max(pars.EPOCH_OFFSETS)]);
-set(gca,'XTick',xtick);
+set(gca,'XTick',sort(unique(xt),'ascend'));
 
 end

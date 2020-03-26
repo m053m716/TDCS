@@ -26,13 +26,14 @@ pars.NEWFIG = true;              % Make a new figure for this plot
 % pars.CAXIS = [-6 6];             % Default color axis
 pars.YTICK = [2 10 60 200]; % Set YTICK marks
 
-pars.RECT_CURVATURE = [0.2 0.4];
-pars.TEXT_COL = [1.00 1.00 1.00];
-pars.LINE_COL = [0.55 0.55 0.55];         % Color of dashed separator lines for epochs
-pars.LABEL_OFFSET = 1.5; % Value subtracted from minimum freq bin to create bar at bottom
-pars.LABEL_HEIGHT = 1.5;
+
 [pars.EPOCH_ONSETS,pars.EPOCH_OFFSETS,pars.EPOCH_NAMES,pars.EPOCH_COL] =...
    defs.Experiment('EPOCH_ONSETS','EPOCH_OFFSETS','EPOCH_NAMES','EPOCH_COL'); 
+
+[pars.RECT_CURVATURE,pars.TEXT_COL,pars.LINE_COL,...
+   pars.LABEL_OFFSET,pars.LABEL_HEIGHT] = ...
+   defs.EpochLabels('RECT_CURVATURE','TEXT_COL','LINE_COL',...
+      'LABEL_OFFSET','LABEL_HEIGHT');
 
 if nargin < 1
    varargout = {pars};   

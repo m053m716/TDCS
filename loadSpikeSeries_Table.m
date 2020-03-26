@@ -9,12 +9,27 @@ end
 
 pars = parseParameters('FileNames',varargin{:});
 seriesFile = fullfile(pars.DIR,pars.SPIKE_SERIES_TABLE);
+mask = load(fullfile(pars.DIR,pars.MASK_TABLE),'T');
+
 if exist(seriesFile,'file')==2
    fprintf(1,'\t->\t<strong>Found</strong> Spike-Series file\n');
    fprintf(1,'\t\t->\t(Loading...)');
    in = load(seriesFile,'T');
    T = in.T;
-   fprintf(1,'\bComplete)\n');
+   nameIndex = ismember(T.Properties.VariableNames,'Name');
+   if sum(nameIndex)==1
+      fprintf(1,'\b\b\b\b\b\b\b\b\b\b\bFixing...)');
+      T.Name = convertName2BlockID(T.Name);
+      T.Properties.VariableNames{nameIndex} = 'BlockID';
+      T = innerjoin(T,mask.T);
+      clear mask;
+      T.Properties.Description = ...
+         ['Multi-unit activity ' newline ...
+         '`Train` is sparse matrix indicating time of spike peaks'];
+      fprintf(1,'\b\b\b\b\b\b\b\b\b\bSaving...) ');
+      save(seriesFile,'T','-v7.3');
+   end
+   fprintf(1,'\b\b\b\b\b\b\b\b\b\b\bComplete)\n');
    return;
 end
 
@@ -44,8 +59,10 @@ for iD = 1:numel(D)
    Channel(iD) = str2double(ch{1});
 end
 
-Name = repmat({F.name},numel(D),1);
-
-T = table(Name,Channel,Cluster,Train,FS,AnimalID,ConditionID,CurrentID);
-
+BlockID = convertName2BlockID(repmat({F.name},numel(D),1));
+T = table(BlockID,Channel,Cluster,Train,FS,AnimalID,ConditionID,CurrentID);
+T = innerjoin(T,mask.T);
+T.Properties.Description = ...
+         ['Multi-unit activity ' newline ...
+         '`Train` is sparse matrix indicating time of spike peaks'];
 end

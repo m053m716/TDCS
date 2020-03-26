@@ -1,7 +1,11 @@
 %MAIN  Main code for processing and outline of figure generation
 %
-%  Main output data is kept in "Table struct" -- `T`
-%  Main data organization struct array is `F`
+%  Main output data is kept in "Table struct" -->  `data`
+%  Main data organization struct array        -->  `F`
+%
+%  Most saved data tables *should* have `pars` (parameters struct) saved in
+%  the UserData property, to give an indication of things like thresholds,
+%  etc.
 %
 %  Default parameters, etc. are found in the `+defs` package; any named
 %  file in `+defs` can be parsed from `varargin` of a function call using
@@ -15,6 +19,7 @@ maintic = tic;
 
 %% Main path info is where is the data stored
 dataTank = defs.FileNames('DIR');
+data = struct;  % Initialize main data struct
 addHelperRepos; % Add any helper repositories as needed
 
 %% Export mask (see defs.Experiment('DS_BIN_WIDTH') for mask binning size)
@@ -26,8 +31,14 @@ data.mask = T; clear T;
 toc(maintic);
 
 %% Export spike rates table using same bins as Mask & LFP data
-T.raw_spikes = loadSpikeSeries_Table(F);
-T.binned_spikes = compute_binned_FR(T.raw_spikes);
+data.raw_spikes = loadSpikeSeries_Table(F);
+T = compute_binned_FR(data.raw_spikes);
+save(fullfile(dataTank,defs.FileNames('SPIKE_SERIES_BINNED_TABLE')),'T','-v7.3');
+data.binned_spikes = T; clear T;
+T = compute_delta_FR(data.binned_spikes);
+save(fullfile(dataTank,defs.FileNames('SPIKE_SERIES_DELTA_TABLE')),'T','-v7.3');
+data.delta_spikes = T; clear T;
 toc(maintic);
 
 %% Export decimated (raw) data for LFP extraction
+

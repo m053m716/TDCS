@@ -6,8 +6,8 @@ function varargout = FileNames(varargin)
 
 pars = struct;
 % DEFAULTS
-pars.DIR = 'P:\Rat\tDCS';
-% pars.DIR = 'D:\MATLAB\Data\tDCS';
+% pars.DIR = 'P:\Rat\tDCS';
+pars.DIR = 'D:\MATLAB\Data\tDCS';
 pars.DATABASE = 'Stats'; % Name of SQLExpress Statistics server on CPL-VISION
 pars.DATABASE_LFP = struct('Atomic','Stats.dbo.LFPid','Key','Stats.dbo.LFPkey'); 
 pars.OUTPUT_FIG_DIR = 'J:\Rat\tDCS\2020_Figures';
@@ -22,7 +22,8 @@ pars.DS_TABLE = '2020-03-17_DS-Table.mat';
 pars.MASK_TABLE = '2020-03-25_Mask-Table_30-sec.mat';
 pars.RATE_SERIES_TABLE = '2020-03-17_Rate-Table.mat';
 pars.SPIKE_SERIES_TABLE = '2020-03-23_Full-Spike-Series.mat';
-pars.SPIKE_SERIES_FORMATTED = '2020-03-24_Full-Spike-Series-Formatted.mat';
+pars.SPIKE_SERIES_BINNED_TABLE = '2020-03-25_Full-Spike-Series_Binned.mat';
+pars.SPIKE_SERIES_DELTA_TABLE = '2020-03-25_Full-Spike-Series_Deltas.mat';
 pars.LFP_TABLE = '2020-03-25_LFP-Table.mat';
 pars.LFP_SPREADSHEET = '2020-03-25_LFP-Table.csv';
 
@@ -36,6 +37,7 @@ pars.RAW_DIR_TAG = '_RawData';
 pars.CAR_DIR_TAG = '_FilteredCAR';
 pars.SPIKE_DIR_TAG = '_wav-sneo_CAR_Spikes';
 pars.DS_DIR_TAG = '_DS';
+pars.SUMMARY_TAG = '_SpikeSummary.mat';   % Spike summary file ID
 
 % SPECIFIC FILES
 pars.RMS_MASK_FILE = '%s_RMS-Mask_30-sec.mat';

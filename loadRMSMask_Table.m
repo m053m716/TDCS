@@ -28,8 +28,7 @@ elseif ischar(F)
 end
 
 maintic = tic;
-Name = {F.name}.';
-BlockID = cellfun(@(C)str2double(C((regexp(C,'-','once')+1):end)),Name);
+BlockID = convertName2BlockID({F.name}.');
 AnimalID = [F.animalID].';
 ConditionID = ceil([F.conditionID].'/2);
 CurrentID = [F.currentID].';
