@@ -18,13 +18,7 @@ function [vec,ts] = getEpochSampleIndices(T,epochIndex,varargin)
 %
 %  (optional) ts : Times corresponding to samples in `vec`
 
-if ~ismember(T.Properties.VariableNames,'N')
-   error(['tDCS:' mfilename ':BadTableFormat'],...
-      ['\n\t->\t<strong>[GETEPOCHSAMPLEINDICES]:</strong> ' ...
-      'Missing table variable: `N`\n']);
-end
-
-if ~ismember(T.Properties.VariableNames,'FS')
+if ~ismember('FS',T.Properties.VariableNames)
    error(['tDCS:' mfilename ':BadTableFormat'],...
       ['\n\t->\t<strong>[GETEPOCHSAMPLEINDICES]:</strong> ' ...
       'Missing table variable: `FS`\n']);
@@ -42,12 +36,25 @@ if numel(epochIndex) > 1
       vec = horzcat(vec,...
          getEpochSampleIndices(T,epochIndex(iEpoch),varargin{:})); %#ok<AGROW>
    end
+   return;
+end
+
+if ~ismember('N',T.Properties.VariableNames)
+   if ismember('Train',T.Properties.VariableNames) % Then it's Raw spikes
+      [FS,~,idx] = unique(T.FS);
+      N = ones(size(FS));
+   else
+      error(['tDCS:' mfilename ':BadTableFormat'],...
+         ['\n\t->\t<strong>[GETEPOCHSAMPLEINDICES]:</strong> ' ...
+         'Missing table variable: `N`\n']);
+   end
+else
+   [N,iN,idx] = unique(T.N);
+   FS = T.FS(iN);
 end
 
 pars = parseParameters('EpochIndexing',varargin{:});
 
-[N,iN,idx] = unique(T.N);
-FS = T.FS(iN);
 n = numel(N);
 tStep = N ./ FS; % Yields timestep (seconds)
 vec = cell(n,1);
@@ -55,8 +62,8 @@ ts = cell(n,1);
 tStart = pars.EPOCH_ONSETS(epochIndex)*60; % Seconds
 tStop = pars.EPOCH_OFFSETS(epochIndex)*60; % Seconds
 for iU = 1:n
-   vecTotal = round(tStep/2):tStep(iU):(95*60); % Time vector
-   v = find(vecTotal>=tStart & vecTotal < tStop);
+   vecTotal = round(tStep(iU)/2):tStep(iU):(95*60); % Time vector
+   v = find((vecTotal>=tStart) & (vecTotal<tStop));
    t = vecTotal(v);
    vec(idx == iU,1) = {v};
    ts(idx == iU,1) = {t};

@@ -8,6 +8,15 @@ function [data,fs] = loadDS_Data(name,tank)
 %  data : Returns 1 x nTimesteps avg data, sampled at `fs` 
 %  fs   : Sample rate (samples per second)
 
+[dataTank,dsTable] = defs.FileNames('DIR','DS_TABLE');
+if (exist(fullfile(dataTank,dsTable),'file')==2) && nargout == 1
+   fprintf(1,'<strong>Found</strong> DS table file. Loading...');
+   in = load(fullfile(dataTank,dsTable),'T');
+   data = in.T;
+   fprintf(1,'<strong>Complete</strong>\n');
+   return;
+end
+
 if nargin < 2
    tank = defs.Experiment('PROCESSED_TANK');
 end

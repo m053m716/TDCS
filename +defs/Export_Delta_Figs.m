@@ -24,6 +24,15 @@ pars.CUR_ID = 1;
 pars.XJITTER = 10; % Seconds
 pars.XLIM = [0 (2700/60 + 2)] + 3; % Minutes
 pars.YLIM = [-120 100];
+% pars.YLIM = [-20 100]; % if rectified
+pars.YTICK = [-100 -50 0 50 100];
+% pars.YTICK = [0 25 50 75 100]; % if rectified
+pars.YLABEL = '\Delta \surd (FR)';
+% pars.YLABEL = '|\Delta \surd (FR)|'; % if rectified
+pars.XLABEL = 'Time (min)';
+pars.LABEL_HEIGHT = 15; % Height of epoch labels (data units)
+pars.LABEL_TEXT_COL = [0 0 0]; % Color of text on epoch labels
+pars.RECTIFY = false; % Setting to true auto-changes other settings
 pars.AX = [];
 
 if nargin < 1

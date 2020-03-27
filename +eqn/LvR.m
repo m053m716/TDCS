@@ -1,25 +1,31 @@
 function LvR_out = LvR(t)
-%% Returns the LvR for a given set of spike timestamps, t.
+%LVR Returns the modified Coefficient of Variation for a set of spikes
 %
-%   1/11/2016 Max Murphy v1.0
-%   Adapted from: 'Relating Neuronal Firing Patterns to Functional
-%   Differentiation of Cerebral Cortex.' Shinomoto et al. (2009)
+%  LvR_out = eqn.LvR(t);
 %
-%   Input: 
-%   t = 1 x n vector of spike timestamps (seconds)
+%  -- Input --
+%  t        :  Numeric vector of spike timestamps (seconds)
+%
+%  -- Output --
+%  LvR_out  :  Coefficient indicating the "randomness" or "uniformity" of
+%                 the spiking time-series, while accounting for intrinsic
+%                 biases that are firing-rate-dependent.
+%
+%  Adapted from: 'Relating Neuronal Firing Patterns to Functional
+%  Differentiation of Cerebral Cortex.' Shinomoto et al. (2009)
 
-%% Parameters
+% Parameters
 %Default
 R = 0.0015;          %Refractoriness (s)
 
-%% Fix dimension of t
+% Fix dimension of t
 t = reshape(t,1,numel(t));
  
 I = diff(t);    %Interspike interval
 n = length(I);  %Number of interspike intervals
 norm = 3/(n-1); %Normalization constant
 
-%% Calculate
+% Calculate
 %Accumulate all summands from index = 1:(n-1)
 summand = 0;
 for ii = 1:(n-1)
@@ -28,7 +34,7 @@ for ii = 1:(n-1)
         (1 + 4*R/(I(ii) + I(ii+1)));    
 end
 
-%% Output
+% Output
 %Output the LvR value for a given segment of a spike train.
 % LvR_out = norm * summand;
 if n > 10

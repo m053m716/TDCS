@@ -8,6 +8,13 @@ function ax = batch_export_delta_Rate_Figs(T,varargin)
 %     * Default parameters are loaded from `defs.WholeTrialFigs`
 
 pars = parseParameters('Export_Delta_Figs',varargin{:});
+if pars.RECTIFY
+   pars.YTICK = [0 25 50 75 100];
+   pars.YLIM = [-20 100];
+   pars.YLABEL = '|\Delta \surd (FR)|';
+   pars.TAG = [pars.TAG '_rectified'];
+end
+
 if istable(T)
    curVec = [-1 1];
    for iIntensity = 1:3
@@ -22,8 +29,6 @@ if istable(T)
          ax = axes(fig,'FontName','Arial',...
             'XColor','k','YColor','k',...
             'NextPlot','add');
-         xlabel(ax,'Time (min)','FontName','Arial','FontSize',14,'Color','k');
-         ylabel(ax,'\Delta \surd (FR)', 'FontName','Arial','FontSize',14,'Color','k'); 
          title(ax,figName,'FontName','Arial','FontSize',16,'Color','k');
          EPOCH_COLS = [];
          idx = T.CurrentID==curVec(iPolarity) & T.ConditionID==iIntensity;
@@ -34,9 +39,9 @@ if istable(T)
             [vec,ts] = getEpochSampleIndices(T(idx,:),iEpoch);
             r = cellfun(@(C,v)C(v),R,vec,'UniformOutput',false);
             mask = cellfun(@(C,v)C(v),M,vec,'UniformOutput',false);
-            data = struct('r',r,'mask',mask);
-            
+            data = struct('r',r,'mask',mask);            
             ax = batch_export_delta_Rate_Figs(data,...
+               varargin{:},...
                'EPOCH_TS',ts,...
                'CONDITION_ID',iIntensity,...
                'EPOCH_ID',iEpoch,...
@@ -48,23 +53,28 @@ if istable(T)
 %          legend(ax,'Location','best',...
 %             'FontSize',12,'FontName','Arial','TextColor','black');
          addEpochLabelsToAxes(ax,...
-            'LABEL_HEIGHT',15,...
-            'LABEL_OFFSET',20,...
-            'LABEL_FIXED_Y',-120,...
+            'LABEL_HEIGHT',pars.LABEL_HEIGHT,...
+            'LABEL_FIXED_Y',pars.YLIM(1),...
             'EPOCH_COL',EPOCH_COLS,...
-            'TEXT_COL',[0 0 0]);
-         xlim(ax,pars.XLIM);
-         ylim(ax,pars.YLIM);
-         ax.YTick = [-100 -50 0 50 100];
-         fname = sprintf('%s-%s',...
+            'TEXT_COL',pars.LABEL_TEXT_COL);         
+         fname = sprintf('%s-%s%s',...
                         pars.INTENSITY_FNAME{iIntensity},...
-                        pars.CURRENT_FNAME{iPolarity});
+                        pars.CURRENT_FNAME{iPolarity},...
+                        pars.TAG);
          if exist(pars.OUT_FOLDER,'dir')==0
             mkdir(pars.OUT_FOLDER);
          end
-         expAI(fig,fullfile(pars.OUT_FOLDER,[fname pars.TAG '.eps']));
-         savefig(fig,fullfile(pars.OUT_FOLDER,[fname pars.TAG '.fig']));
-         saveas(fig,fullfile(pars.OUT_FOLDER,[fname pars.TAG '.png']));
+         ax.YTick = pars.YTICK;
+         xlim(ax,pars.XLIM);
+         ylim(ax,pars.YLIM);
+         
+         ylabel(ax,pars.YLABEL, ...
+               'FontName','Arial','FontSize',14,'Color','k'); 
+         xlabel(ax,pars.XLABEL,...
+            'FontName','Arial','FontSize',14,'Color','k');
+         expAI(fig,fullfile(pars.OUT_FOLDER,[fname '.eps']));
+         savefig(fig,fullfile(pars.OUT_FOLDER,[fname '.fig']));
+         saveas(fig,fullfile(pars.OUT_FOLDER,[fname '.png']));
          delete(fig);
       end
    end
@@ -81,7 +91,11 @@ end
 YData = vertcat(T.r);
 XData = cell2mat(pars.EPOCH_TS);
 XData = XData(:);
-YData = YData(:);
+if pars.RECTIFY
+   YData = abs(YData(:));
+else
+   YData = YData(:);
+end
 MaskData = vertcat(T.mask);
 MaskData = MaskData(:);
 YData(MaskData) = [];

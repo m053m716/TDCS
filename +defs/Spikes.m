@@ -17,7 +17,7 @@ pars.MIN_SIZE = 200000;              % Minimum summary file size (bytes)
    defs.FileNames('DIR','ASSIGNMENT_FILE','DATA_STRUCTURE','SUMMARY_TAG');
 
 % Related (general) Experiment parameters
-[pars.EPOCH_ONSETS,pars.EPOCH_OFFSETS,pars.GROUPS,pars.DS_BIN_DURATION] = ...
+[pars.EPOCH_ONSETS,pars.EPOCH_OFFSETS,pars.EPOCH_NAMES,pars.DS_BIN_DURATION] = ...
    defs.Experiment('EPOCH_ONSETS','EPOCH_OFFSETS','EPOCH_NAMES','DS_BIN_DURATION');
 
 if nargin < 1

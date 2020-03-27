@@ -14,6 +14,7 @@
 %  >> e.g.
 %  >> pars = parseParameters('FileNames',varargin{:});
 
+%% Clear workspace and begin main timer
 clear; clc;
 maintic = tic;
 
@@ -38,7 +39,16 @@ data.binned_spikes = T; clear T;
 T = compute_delta_FR(data.binned_spikes);
 save(fullfile(dataTank,defs.FileNames('SPIKE_SERIES_DELTA_TABLE')),'T','-v7.3');
 data.delta_spikes = T; clear T;
+T = compute_epoch_LvR(data.raw_spikes);
+save(fullfile(dataTank,defs.FileNames('SPIKE_SERIES_LVR_TABLE')),'T','-v7.3');
+data.LvR = T; clear T;
 toc(maintic);
+
+% Export LvR figures
+genRainCloudPlots(data.LvR);
 
 %% Export decimated (raw) data for LFP extraction
 
+%% Export LFP statistics and figures
+data.LFP = loadLFP_Table;
+genLFPRainCloudPlots(data.LFP);

@@ -10,6 +10,13 @@ function T = loadLFP_Table(F,varargin)
 %      which contains the LFP data.
 
 pars = parseParameters('FileNames',varargin{:});
+if exist(fullfile(pars.DIR,pars.LFP_TABLE),'file')==2
+   fprintf(1,'<strong>Found</strong> extracted LFP Table. Loading...');
+   in = load(fullfile(pars.DIR,pars.LFP_TABLE),'LFP');
+   T = in.LFP;
+   fprintf(1,'<strong>Complete</strong>\n');
+   return;
+end
 
 if nargin < 1
    in = load(fullfile(pars.DIR,pars.DATA_STRUCTURE),'F');

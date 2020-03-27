@@ -1,4 +1,4 @@
-function LFP = extract_LFP_bands(ds_data,mask,fs,F,varargin)
+function [LFP,S] = extract_LFP_bands(ds_data,mask,fs,F,varargin)
 %EXTRACT_LFP_BANDS  Extract LFP band power for data in `ds_data` to Table
 %
 %  LFP = extract_LFP_bands(T);
@@ -34,10 +34,20 @@ function LFP = extract_LFP_bands(ds_data,mask,fs,F,varargin)
 %                 * 'CurrentID'  (Corresponds to ['Anodal','Cathodal'])
 %                 * 'EpochID'    (Corresponds to ['Pre','Stim','Post'])
 %                 * 'BandID'     (Corresponds to ['Delta','Theta',...])
-%                 * 'Mean'       (Log-transformed power spectrum)
-%                 * 'Median'     (Log-transformed power spectrum)
+%                 * 'Mean'       (Log-transformed power spectrum mean)
+%                 * 'Median'     (Log-transformed power spectrum median)
 %                 * 'NSamples'   (Non-masked time-series samples)
-%                 * 'SD'         (Log-transformed power spectrum)
+%                 * 'SD'         (Log-transformed power spectrum standard deviation)
+%
+%  S        :  Data table that has the following variables:
+%                 * 'BlockID'       (Corresponds to recording Block)
+%                 * 'AnimalID'      (Corresponds to Rat number)
+%                 * 'ConditionID'   (Corresponds to [0.0, 0.2, 0.4] mA)
+%                 * 'CurrentID'     (Corresponds to ['Anodal','Cathodal'])
+%                 * 'EpochID'       (Corresponds to ['Pre','Stim','Post'])
+%                 * 'NSamples'      (Non-masked time-series samples)
+%                 * 'Spectrum_Mean' (Log-transformed average power spectrum)
+%                 * 'Spectrum_SD'   (Log-transformed power spectrum SD)
 
 % Parse number of inputs
 if istable(ds_data)   
@@ -58,14 +68,17 @@ if istable(ds_data)
    
    if size(ds_data,1) > 1
       LFP = table.empty;
+      S = table.empty;
       for iRow = 1:size(ds_data,1)
-         LFP = vertcat(LFP,extract_LFP_bands(ds_data(iRow,:),varargin{:})); %#ok<AGROW>
+         [tmpLFP,tmpS] = extract_LFP_bands(ds_data(iRow,:),varargin{:});
+         LFP = vertcat(LFP,tmpLFP); %#ok<AGROW>
+         S = vertcat(S,tmpS); %#ok<AGROW>
       end
       return;      
    end
    
    F = struct(...
-      'Name',ds_data.Name,...
+      'Name',ds_data.BlockID,...
       'animalID',ds_data.AnimalID,...
       'conditionID',ds_data.ConditionID,...
       'currentID',ds_data.CurrentID...
@@ -115,9 +128,9 @@ BlockID  = ones(nRow,1).*blockID;            % [91;91;91;91;91;91;...]
 AnimalID = ones(nRow,1).*F.animalID;         % [ 7; 7; 7; 7; 7; 7;...]
 ConditionID = ones(nRow,1).*F.conditionID;   % [ 2; 2; 2; 2; 2; 2;...]
 CurrentID = ones(nRow,1).*F.currentID;       % [-1;-1;-1;-1;-1;-1;...]
-EpochID  = repmat(1:nEpoch,nBand,1);         
-EpochID = EpochID(:);                        % [ 1; 2; 3; 1; 2; 3;...]
-BandID   = repmat((1:nBand).',nEpoch,1);     % [ 1; 1; 1; 2; 2; 2;...]
+EpochID  = repmat((1:nEpoch).',nBand,1);     % [ 1; 2; 3; 1; 2; 3;...]
+BandID   = repmat((1:nBand),nEpoch,1);     
+BandID   = BandID(:);                        % [ 1; 1; 1; 2; 2; 2;...]
 
 Mean = nan(nRow,1);
 Median = nan(nRow,1);
@@ -136,16 +149,16 @@ for i = 1:nBand
       iRow = iRow + 1;
       t_idx = (t_>=p.EPOCH_ONSETS(k)) & ...
               (t_<=p.EPOCH_OFFSETS(k));
+      NSamples(iRow) = sum(t_idx);
       Mean(iRow) = mean(p_mu(t_idx));
       Median(iRow) = median(p_med(t_idx));
-      NSamples(iRow) = sum(t_idx);
       SD(iRow) = std(p_mu(t_idx));
    end
 end
-fprintf(1,'\b\b\b\b\b\b\b\b\b\b\b\b<strong>complete</strong>\n');
-
 LFP = table(BlockID,AnimalID,ConditionID,CurrentID,EpochID,BandID,...
    Mean,Median,NSamples,SD);
+LFP.Properties.Description = ...
+   'Contains "frequency band" statistics for the local field potential';
 LFP.Properties.VariableDescriptions = ...
    {...
    'BlockID: (Corresponds to recording Block)'; ...
@@ -160,6 +173,40 @@ LFP.Properties.VariableDescriptions = ...
    'SD: (Log-transformed power spectrum)' ...
    };
 LFP.Properties.UserData = p; % Store parameters
+LFP = setTableOutcomeVariable(LFP,'Mean');
+
+BlockID = BlockID(1:nEpoch);
+AnimalID = AnimalID(1:nEpoch);
+ConditionID = ConditionID(1:nEpoch);
+CurrentID = CurrentID(1:nEpoch);
+EpochID = EpochID(1:nEpoch);
+NSamples = NSamples(1:nEpoch);
+Spectrum_Mean = zeros(nEpoch,numel(f));
+Spectrum_SD = zeros(nEpoch,numel(f));
+for k = 1:nEpoch
+   t_idx = (t_>=p.EPOCH_ONSETS(k)) & ...
+           (t_<=p.EPOCH_OFFSETS(k));
+   Spectrum_Mean(k,:) = mean(ps_(:,t_idx),2).';
+   Spectrum_SD(k,:) = std(ps_(:,t_idx),[],2).';
+end
+S = table(BlockID,AnimalID,ConditionID,CurrentID,EpochID,NSamples,...
+   Spectrum_Mean,Spectrum_SD);
+S.Properties.Description = ...
+   'Contains full frequency power spectrum for each epoch';
+S.Properties.VariableDescriptions = ...
+   {...
+   'BlockID: (Corresponds to recording Block)'; ...
+   'AnimalID: (Corresponds to Rat number)'; ...
+   'ConditionID: (Corresponds to [0.0, 0.2, 0.4] mA)'; ...
+   'CurrentID: (Corresponds to {''Anodal'',''Cathodal''})'; ...
+   'EpochID: (Corresponds to {''Pre'',''Stim'',''Post''})'; ...
+   'NSamples: (Non-masked time-series samples)'; ...
+   'Spectrum_Mean: (Log-transformed average power spectrum)'; ...
+   'Spectrum_SD:   (Log-transformed power spectrum standard deviation)'...
+   };
+S.Properties.UserData = pars;
+S = setTableOutcomeVariable(S,'Spectrum_Mean');
+fprintf(1,'\b\b\b\b\b\b\b\b\b\b\b\b<strong>complete</strong>\n');
 
    function p = reduceParameters(pars,fs)
       p = struct;

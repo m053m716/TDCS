@@ -8,9 +8,9 @@ pars = struct;
 % DEFAULTS
 % pars.DIR = 'P:\Rat\tDCS';
 pars.DIR = 'D:\MATLAB\Data\tDCS';
+pars.OUTPUT_FIG_DIR = fullfile(pars.DIR,'Figures');
 pars.DATABASE = 'Stats'; % Name of SQLExpress Statistics server on CPL-VISION
 pars.DATABASE_LFP = struct('Atomic','Stats.dbo.LFPid','Key','Stats.dbo.LFPkey'); 
-pars.OUTPUT_FIG_DIR = 'J:\Rat\tDCS\2020_Figures';
 pars.OUTPUT_STATS_DIR_CSV = 'J:\Rat\tDCS\2020_Stats';
 pars.OUTPUT_STATS_DIR_MAT = fullfile(pars.OUTPUT_STATS_DIR_CSV,'_mat');
 pars.OUTPUT_STATS_DIR_SPIKES = 'J:\Rat\tDCS\2020_Stats\scratchwork\Spikes';
@@ -24,6 +24,10 @@ pars.RATE_SERIES_TABLE = '2020-03-17_Rate-Table.mat';
 pars.SPIKE_SERIES_TABLE = '2020-03-23_Full-Spike-Series.mat';
 pars.SPIKE_SERIES_BINNED_TABLE = '2020-03-25_Full-Spike-Series_Binned.mat';
 pars.SPIKE_SERIES_DELTA_TABLE = '2020-03-25_Full-Spike-Series_Deltas.mat';
+pars.SPIKE_SERIES_LVR_TABLE = '2020-03-26_Full-Spike-Series_LvR.mat';
+pars.SPIKE_SERIES_LVR_SPREADSHEET = '2020-03-26_Full-Spike-Series_LvR.csv';
+pars.SPECTRUM_TABLE = '2020-03-26_LFP-Spectrum-Table.mat';
+pars.PANEL_SPECTRUM_FIGURE_NAME = 'LFP Spectrum Panelized Changes';
 pars.LFP_TABLE = '2020-03-25_LFP-Table.mat';
 pars.LFP_SPREADSHEET = '2020-03-25_LFP-Table.csv';
 
@@ -31,6 +35,15 @@ pars.LFP = '2017-07-13_LFP Data.mat';
 pars.DATA_STRUCTURE = '2017 TDCS Data Structure Organization.mat';
 pars.EPOCH_DATA = '2017-06-17_Concatenated Epoch Data.mat';
 pars.ASSIGNMENT_FILE = '2017-06-14_Excluded Metric Subset.mat';
+
+% FIGURES
+pars.RAINCLOUD_FIG_DIR = fullfile(pars.OUTPUT_FIG_DIR,'RainCloudPlots');
+pars.BY_ANIMAL_FIG_NAME = 'Whole-trial: by Rat';
+pars.BY_ANIMAL_FILE_NAME = 'by-Animal';
+pars.BY_TREATMENT_FIG_NAME = 'Whole-trial: by Treatment';
+pars.BY_TREATMENT_FILE_NAME = 'by-Treatment';
+pars.BY_TREATMENT_BY_EPOCH_FIG_NAME = 'Whole-Trial: by Treatment and Epoch';
+pars.BY_TREATMENT_BY_EPOCH_FILE_NAME = 'by-Treatment_by-Epoch';
 
 % SUBFOLDERS
 pars.RAW_DIR_TAG = '_RawData';
