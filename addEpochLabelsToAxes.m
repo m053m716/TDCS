@@ -10,17 +10,28 @@ function hg = addEpochLabelsToAxes(ax,varargin)
 %  hg : Graphics object group handle with all the separator lines,
 %        rectangles and texts on them.
 
+if nargin < 1
+   ax = gca;
+end
 
+if numel(ax) > 1
+   error(['tDCS:' mfilename ':BadInputSize'],...
+      ['\n\t->\t<strong>[ADDEPOCHLABELSTOAXES]:</strong> ' ...
+      'Should only add epoch labels to scalar axes objects\n']);
+end
+
+set(ax,'NextPlot','add');
 pars = parseParameters('EpochLabels',varargin{:});
 
-yMin = get(gca,'YLim')-pars.LABEL_OFFSET;
-yMax = yMin(2);
 if isempty(pars.LABEL_FIXED_Y)
-   yMin = yMin(1);
+   yMin = ax.YLim(1)-pars.LABEL_OFFSET;
 else
    yMin = pars.LABEL_FIXED_Y;
 end
-ylim(gca,[yMin, yMax]);
+yMax = ax.YLim(2);
+if yMin < ax.YLim(1)
+   ylim(ax,[yMin, yMax]);
+end
 hg = hggroup(ax,'Tag','Epochs','DisplayName','Epoch Info');
 nEpoch = numel(pars.EPOCH_ONSETS);
 xt = [];
@@ -48,7 +59,7 @@ for iL = 1:nEpoch
       'VerticalAlignment','middle');
 end
 hg.Annotation.LegendInformation.IconDisplayStyle = 'off';
-set(gca,'XLim',[min(pars.EPOCH_ONSETS),max(pars.EPOCH_OFFSETS)]);
-set(gca,'XTick',sort(unique(xt),'ascend'));
+set(ax,'XLim',[min(pars.EPOCH_ONSETS),max(pars.EPOCH_OFFSETS)]);
+set(ax,'XTick',sort(unique(xt),'ascend'));
 
 end

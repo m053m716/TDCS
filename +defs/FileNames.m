@@ -28,6 +28,7 @@ pars.SPIKE_SERIES_LVR_TABLE = '2020-03-26_Full-Spike-Series_LvR.mat';
 pars.SPIKE_SERIES_LVR_SPREADSHEET = '2020-03-26_Full-Spike-Series_LvR.csv';
 pars.SPECTRUM_TABLE = '2020-03-26_LFP-Spectrum-Table.mat';
 pars.PANEL_SPECTRUM_FIGURE_NAME = 'LFP Spectrum Panelized Changes';
+pars.PANEL_RATE_FIGURE_NAME = 'Spike Rate Panelized Changes';
 pars.LFP_TABLE = '2020-03-25_LFP-Table.mat';
 pars.LFP_SPREADSHEET = '2020-03-25_LFP-Table.csv';
 

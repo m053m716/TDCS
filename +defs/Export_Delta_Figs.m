@@ -5,7 +5,7 @@ function varargout = Export_Delta_Figs(varargin)
 %  [var1,var2,...] = defs.Export_Delta_Figs('var1Name','var2Name',...);
 
 pars = struct;
-
+pars.SAVE_FIGS = false;
 [pars.FIG_POS,pars.ANIMAL_COL,pars.CONDITION_CUR_COL,pars.EPOCH_COL_FACTOR,pars.EPOCH_TS,pars.EPOCH_NAMES] = ...
    defs.Experiment('FIG_POS','ANIMAL_COL','CONDITION_CUR_COL','EPOCH_COL_FACTOR','EPOCH_MASK_INDICES','EPOCH_NAMES');
 pars.OUT_FOLDER = fullfile(defs.FileNames('DIR'),'Figures');

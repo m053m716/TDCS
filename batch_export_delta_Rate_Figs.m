@@ -72,10 +72,12 @@ if istable(T)
                'FontName','Arial','FontSize',14,'Color','k'); 
          xlabel(ax,pars.XLABEL,...
             'FontName','Arial','FontSize',14,'Color','k');
-         expAI(fig,fullfile(pars.OUT_FOLDER,[fname '.eps']));
-         savefig(fig,fullfile(pars.OUT_FOLDER,[fname '.fig']));
-         saveas(fig,fullfile(pars.OUT_FOLDER,[fname '.png']));
-         delete(fig);
+         if pars.SAVE_FIGS
+            expAI(fig,fullfile(pars.OUT_FOLDER,[fname '.eps']));
+            savefig(fig,fullfile(pars.OUT_FOLDER,[fname '.fig']));
+            saveas(fig,fullfile(pars.OUT_FOLDER,[fname '.png']));
+            delete(fig);
+         end
       end
    end
    return;
