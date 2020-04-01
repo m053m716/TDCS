@@ -20,12 +20,14 @@ pars.TAG = ''; % For file naming
 pars.FIG_POS = [0.15 0.2 0.35 0.70];
 
 % Plotting parameters: `gfx__.plotWithShadedError`
-pars.ALPHA = 0.05;
+pars.ALPHA = 0.001;
 pars.SIG_STR = 'Significant (\\alpha = %s)';
 pars.MAIN_LINEWIDTH = 2.0;
 pars.ANNOTATION = 'on';
-pars.ERROR_COEFF = 1.0;    % # of 'SEM' or 'SD' to shade
-pars.ERROR_TYPE = 'SD';    % Can be 'SEM' or 'SD'
+pars.ERROR_COEFF = 1.0;     % # of 'SEM' or 'SD' to shade
+pars.ERROR_TYPE = 'SD';     % Can be 'SEM' or 'SD'
+pars.WHITEN_W = 30;      % Number of samples to whiten (length of epoch)
+pars.WHITEN_OVERLAP = 0; % Number of samples to overlap (whiten)
 pars.H0 = []; % If H0 is empty, uses the combined SHAM conditions
 
 % Legend parameters
@@ -43,29 +45,29 @@ pars.LEGEND_BGCOLOR = 'none';
 pars.SIG_LINEWIDTH = 1.5;
 pars.SIG_COLOR     = [0 0 0];   % Black
 pars.SIG_LINEJOIN  = 'chamfer'; % 'chamfer','miter','round' are options
-pars.SIG_Y_BRACKET = 48;
-pars.SIG_Y_TICK =    43; 
-pars.SIG_REPEATED = 8; 
+pars.SIG_Y_BRACKET = 65;
+pars.SIG_Y_TICK =    63;  
+pars.SIG_SHOW_PROBABILITY = true;
 pars.SIG_TEST = @ttest2;
 % For replications selection:
 % Lowest integer to remove significance from PRE epoch
 
 % Axes properties for `label__.setEvenLimits`
 pars.XLIM = [0 (2700/60 + 2)] + 3; % Minutes
-pars.YLIM = [-65 65];
-% pars.YLIM = [-20 100]; % if rectified
+pars.YLIM = [-50 100];
 pars.YTICK = [-50 -25 0 25 50];
-% pars.YTICK = [0 25 50 75 100]; % if rectified
-pars.LABEL_HEIGHT = 14; % Height of epoch labels (data units)
-pars.LABEL_FIXED_Y = -65;
+pars.YTICKLABELS = {'-50','','0','','50'};
+pars.LABEL_HEIGHT = 15; % Height of epoch labels (data units)
+pars.LABEL_FIXED_Y = -50;
 
+pars.ADD_EPOCH_DELIMITER_LINES = false;
 pars.YLABEL = '\Delta \surd (FR)';
-% pars.YLABEL = '|\Delta \surd (FR)|'; % if rectified
 pars.XLABEL = 'Time (min)';
+pars.XTICK = [20 35];
+pars.XMINORTICK = [5 15 40 55];
+pars.MAX_T_VAL_MINS = 120;
 pars.LABEL_TEXT_COL = [0 0 0]; % Color of text on epoch labels
 pars.RECTIFY = false; % Setting to true auto-changes other settings
-pars.MAX_T_VAL_MINS = 120;
-
 
 if nargin < 1
    varargout = {pars};   

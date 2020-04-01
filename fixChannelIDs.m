@@ -4,11 +4,29 @@ function T = fixChannelIDs(T)
 %  T = fixChannelIDs(T);
 %  T : Any table containing the `Channel` and `Name` variables
 
-U = unique(T.Name);
+if ismember('Rat',T.Properties.VariableNames)
+   blockNameID = 'Rat';
+elseif ismember('Name',T.Properties.VariableNames)
+   blockNameID = 'Name';
+else
+   blockNameID = 'BlockID';
+end
+
+if ismember('Channel',T.Properties.VariableNames)
+   channelNameID = 'Channel';
+else
+   channelNameID = 'ChannelID';
+end
+
+U = unique(T.(blockNameID));
+if ~iscell(U)
+   U = num2cell(U);
+end
 for ii = 1:numel(U)
-   idx = ismember(T.Name,U{ii});
-   if min(T.Channel(idx)) < 8
-      T.Channel(idx) = T.Channel(idx)+(8 - min(T.Channel(idx)));
+   idx = ismember(T.(blockNameID),U{ii});
+   if min(T.(channelNameID)(idx)) < 8
+      C = T.(channelNameID)(idx);
+      T.(channelNameID)(idx) = C + (8 - min(C));
    end
 end
 
