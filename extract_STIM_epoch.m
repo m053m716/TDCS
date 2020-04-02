@@ -11,7 +11,16 @@ function extract_STIM_epoch(stimFile,board_dig_in_data,board_dig_in_channels,t)
 %
 %  -- output --
 %  Saves a file (hopefully to the corresponding block; but entirely depends
-%  on name of `stimFile`; no error-checking in this function).
+%  on name of `stimFile`; no error-checking in this function). File
+%  contains the following variables:
+%
+%     * 't'                         :  Time (seconds) of all data columns
+%     * 't_stim'                    :  All times (minutes) of STIM - HIGH
+%     * 't_stim_start'              :  Time (minutes) of STIM epoch START
+%     * 't_stim_stop'               :  Time (minutes) of STIM epoch STOP
+%     * 'board_dig_in_data'         :  Data used to parse START/STOP times
+%     * 'board_dig_in_channels'     :  Channels struct array (rows of data)
+%     * 'has_dig_epoch_saved'       :  True if parsing succeeded 
 
 pars = struct;
 [pars.DEF_START_TIME,pars.DEF_STOP_TIME,pars.DIG_SIG_NAME] = ...
@@ -66,8 +75,15 @@ else
       t_stim_stop = max(t_stim);
    end
 end
+save(stimFile,...
+   't',...
+   't_stim',...
+   't_stim_start',...
+   't_stim_stop',...
+   'board_dig_in_data',...
+   'board_dig_in_channels',...
+   'has_dig_epoch_saved',...
+   '-v7.3');
 fprintf(1,'complete!\n');
-save(stimFile,'t_stim_start','t_stim_end','t_stim','has_dig_epoch_saved',...
-   't','board_dig_in_data','board_dig_in_channels','-v7.3');
 
 end

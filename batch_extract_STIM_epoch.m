@@ -24,9 +24,9 @@ h = waitbar(0,'Running batch STIM epoch extraction...',...
 nBlocks = numel(F);
 for iF = 1:nBlocks
    stimEpochTimesFile = fullfile(F(iF).block,[F(iF).base tag]);
-   if exist(stimEpochTimesFile,'file')==2
-      continue; % No need to re-extract
-   end
+%    if exist(stimEpochTimesFile,'file')==2
+%       continue; % No need to re-extract
+%    end
    if getappdata(h,'canceling')
       clc;
       fprintf(1,'STIM epoch extraction <strong>canceled.</strong>\n');
