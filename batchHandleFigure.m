@@ -28,6 +28,7 @@ end
 if nargout ~= 1
    pars = p__.parseParameters('Exporting_To_Illustrator',varargin{:});
    fprintf(1,'\t->\tSaving: %s...',filenameString);
+   pars.AutoFormat.Font = false;
    [fig,outputname] = gfx__.expAI(fig,fullfile(outDir,filenameString),pars);
    saveas(fig,fullfile(outDir, [filenameString '.png']));
    if exist(fullfile(outDir,'MatFigs'),'dir')==0

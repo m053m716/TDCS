@@ -6,17 +6,39 @@ function varargout = FileNames(varargin)
 
 pars = struct;
 % DEFAULTS
+% Major parameters
 pars.DIR = local.Configuration('DIR');
+pars.RAW_BINARY_LOCATION = 'R:\Rat\Intan\TDCS';
+pars.DATA_STRUCTURE = '2017 TDCS Data Structure Organization.mat';
+
+% Figures
 pars.OUTPUT_FIG_DIR = fullfile(pars.DIR,'Figures');
-pars.DATABASE = 'Stats'; % Name of SQLExpress Statistics server on CPL-VISION
-pars.DATABASE_LFP = struct('Atomic','Stats.dbo.LFPid','Key','Stats.dbo.LFPkey'); 
-pars.OUTPUT_STATS_DIR_CSV = 'J:\Rat\tDCS\2020_Stats';
-pars.OUTPUT_STATS_DIR_MAT = fullfile(pars.OUTPUT_STATS_DIR_CSV,'_mat');
-pars.OUTPUT_STATS_DIR_SPIKES = 'J:\Rat\tDCS\2020_Stats\scratchwork\Spikes';
+pars.RAINCLOUD_FIG_DIR = fullfile(pars.OUTPUT_FIG_DIR,'RainCloudPlots');
+pars.BY_ANIMAL_FIG_NAME = 'Whole-trial: by Rat';
+pars.BY_ANIMAL_FILE_NAME = 'by-Animal';
+pars.BY_TREATMENT_FIG_NAME = 'Whole-trial: by Treatment';
+pars.BY_TREATMENT_FILE_NAME = 'by-Treatment';
+pars.BY_TREATMENT_BY_EPOCH_FIG_NAME = 'Whole-Trial: by Treatment and Epoch';
+pars.BY_TREATMENT_BY_EPOCH_FILE_NAME = 'by-Treatment_by-Epoch';
+
+% Block Sub-folders & Tags
+pars.RAW_DIR_TAG = '_RawData';
+pars.CAR_DIR_TAG = '_FilteredCAR';
+pars.SPIKE_DIR_TAG = '_wav-sneo_CAR_Spikes';
+pars.DS_DIR_TAG = '_DS';
+pars.SUMMARY_TAG = '_SpikeSummary.mat';   % Spike summary file ID
+pars.STIM_EPOCH_TIMES_FILE = '_StimEpochTimes.mat';
+
+% Specific Tables/Files
+pars.RMS_MASK_FILE = '%s_RMS-Mask_30-sec.mat';
+pars.LFP_FILE = '%s_LFP.mat';
+pars.LFP_STATS_FILE = 'LFP_BandPower_Stats';
+pars.LFP_RM_STATS_FILE = 'LFP_RM_BandPower_Stats';
+pars.LFP_DETAILED_STATS_FILE = 'LFP_Detailed_BandPower_Stats';
+pars.LFP_DETAILED_STATS_TS_FILE = 'LFP_Detailed_BandPower_Stats_TimeSeries';
+pars.STIM_EPOCH_TABLE = '2020-04-02_Stim-Epoch-Times-Table.mat';
 pars.RATE_CHANGES = '2017-07-18_Rate Changes.mat';
 pars.WORKSPACE = '2017-07-20_tDCS Workspace.mat';
-% pars.SPIKE_SERIES = '2017-11-22_Updated Spike Series.mat';
-% pars.SPIKE_SERIES = '2020-03-17_Spike-Trains-Table.mat';
 pars.DS_TABLE = '2020-03-17_DS-Table.mat';
 pars.MASK_TABLE = '2020-03-25_Mask-Table_30-sec.mat';
 pars.RATE_SERIES_TABLE = '2020-03-17_Rate-Table.mat';
@@ -38,36 +60,17 @@ pars.LFP_TABLE = '2020-03-25_LFP-Table.mat';
 pars.LFP_SPREADSHEET = '2020-03-25_LFP-Table.csv';
 pars.OLD_CSV_SPIKES = 'TDCS_Spikes.csv';
 
-pars.RAW_BINARY_LOCATION = 'R:\Rat\Intan\TDCS';
-pars.STIM_EPOCH_TIMES_FILE = '_StimEpochTimes.mat';
+% Deprecated
+pars.OUTPUT_STATS_DIR_CSV = 'J:\Rat\tDCS\2020_Stats';
+pars.OUTPUT_STATS_DIR_MAT = fullfile(pars.OUTPUT_STATS_DIR_CSV,'_mat');
+pars.OUTPUT_STATS_DIR_SPIKES = 'J:\Rat\tDCS\2020_Stats\scratchwork\Spikes';
+pars.DATABASE = 'Stats'; % Name of SQLExpress Statistics server on CPL-VISION
+pars.DATABASE_LFP = struct('Atomic','Stats.dbo.LFPid','Key','Stats.dbo.LFPkey'); 
 pars.LFP = '2017-07-13_LFP Data.mat';
-pars.DATA_STRUCTURE = '2017 TDCS Data Structure Organization.mat';
 pars.EPOCH_DATA = '2017-06-17_Concatenated Epoch Data.mat';
 pars.ASSIGNMENT_FILE = '2017-06-14_Excluded Metric Subset.mat';
-
-% FIGURES
-pars.RAINCLOUD_FIG_DIR = fullfile(pars.OUTPUT_FIG_DIR,'RainCloudPlots');
-pars.BY_ANIMAL_FIG_NAME = 'Whole-trial: by Rat';
-pars.BY_ANIMAL_FILE_NAME = 'by-Animal';
-pars.BY_TREATMENT_FIG_NAME = 'Whole-trial: by Treatment';
-pars.BY_TREATMENT_FILE_NAME = 'by-Treatment';
-pars.BY_TREATMENT_BY_EPOCH_FIG_NAME = 'Whole-Trial: by Treatment and Epoch';
-pars.BY_TREATMENT_BY_EPOCH_FILE_NAME = 'by-Treatment_by-Epoch';
-
-% SUBFOLDERS
-pars.RAW_DIR_TAG = '_RawData';
-pars.CAR_DIR_TAG = '_FilteredCAR';
-pars.SPIKE_DIR_TAG = '_wav-sneo_CAR_Spikes';
-pars.DS_DIR_TAG = '_DS';
-pars.SUMMARY_TAG = '_SpikeSummary.mat';   % Spike summary file ID
-
-% SPECIFIC FILES
-pars.RMS_MASK_FILE = '%s_RMS-Mask_30-sec.mat';
-pars.LFP_FILE = '%s_LFP.mat';
-pars.LFP_STATS_FILE = 'LFP_BandPower_Stats';
-pars.LFP_RM_STATS_FILE = 'LFP_RM_BandPower_Stats';
-pars.LFP_DETAILED_STATS_FILE = 'LFP_Detailed_BandPower_Stats';
-pars.LFP_DETAILED_STATS_TS_FILE = 'LFP_Detailed_BandPower_Stats_TimeSeries';
+% pars.SPIKE_SERIES = '2017-11-22_Updated Spike Series.mat';
+% pars.SPIKE_SERIES = '2020-03-17_Spike-Trains-Table.mat';
 
 if nargin < 1
    varargout = {pars};   

@@ -29,6 +29,7 @@ pars.ERROR_TYPE = 'SD';     % Can be 'SEM' or 'SD'
 pars.WHITEN_W = 30;      % Number of samples to whiten (length of epoch)
 pars.WHITEN_OVERLAP = 0; % Number of samples to overlap (whiten)
 pars.H0 = []; % If H0 is empty, uses the combined SHAM conditions
+pars.AGGREGATE_SHAM = false;
 
 % Legend parameters
 pars.LEGEND_AXES_ADDRESS = [2,2];
@@ -46,7 +47,7 @@ pars.SIG_LINEWIDTH = 1.5;
 pars.SIG_COLOR     = [0 0 0];   % Black
 pars.SIG_LINEJOIN  = 'chamfer'; % 'chamfer','miter','round' are options
 pars.SIG_Y_BRACKET = 65;
-pars.SIG_Y_TICK =    63;  
+pars.SIG_Y_TICK =    61;  
 pars.SIG_SHOW_PROBABILITY = true;
 pars.SIG_TEST = @ttest2;
 % For replications selection:
@@ -57,13 +58,14 @@ pars.XLIM = [0 (2700/60 + 2)] + 3; % Minutes
 pars.YLIM = [-50 100];
 pars.YTICK = [-50 -25 0 25 50];
 pars.YTICKLABELS = {'-50','','0','','50'};
+pars.AX_FONT_SIZE = 10; % Needs to be smaller than usual
 pars.LABEL_HEIGHT = 15; % Height of epoch labels (data units)
 pars.LABEL_FIXED_Y = -50;
 
 pars.ADD_EPOCH_DELIMITER_LINES = false;
 pars.YLABEL = '\Delta \surd (FR)';
 pars.XLABEL = 'Time (min)';
-pars.XTICK = [20 35];
+pars.XTICK = [5 15 20 35 40 50];
 pars.XMINORTICK = [5 15 40 55];
 pars.MAX_T_VAL_MINS = 120;
 pars.LABEL_TEXT_COL = [0 0 0]; % Color of text on epoch labels

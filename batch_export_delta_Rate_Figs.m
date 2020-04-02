@@ -73,7 +73,7 @@ if istable(T)
          xlabel(ax,pars.XLABEL,...
             'FontName','Arial','FontSize',14,'Color','k');
          if pars.SAVE_FIGS
-            expAI(fig,fullfile(pars.OUT_FOLDER,[fname '.eps']));
+            gfx__.expAI(fig,fullfile(pars.OUT_FOLDER,[fname '.eps']));
             savefig(fig,fullfile(pars.OUT_FOLDER,[fname '.fig']));
             saveas(fig,fullfile(pars.OUT_FOLDER,[fname '.png']));
             delete(fig);
