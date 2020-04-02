@@ -581,21 +581,7 @@ if ~saveStimTimeOnly
    end
    fprintf(1, 'Type ''whos'' to see variables.\n');
 else
-   
-   if size(board_dig_in_data,1) > 1
-      ch_names = {board_dig_in_channels.custom_channel_name};
-      idx = find(strcmpi(ch_names,'StimON'));
-      if isempty(idx)
-         t_stim = t_dig(1,board_dig_in_data(1,:)>0);
-      else
-         t_stim = t_dig(1,board_dig_in_data(idx,:)>0);
-      end
-   else
-      t_stim = t_dig(1,board_dig_in_data>0);
-   end
-   t_stim_start = min(t_stim)/60;
-   t_stim_end   = max(t_stim)/60;
-   save(stimFile,'t_stim_start','t_stim_end','-v7.3');
+   extract_STIM_epoch(stimFile,board_dig_in_data,board_dig_in_channels,t_dig);
 end
 fprintf(1, 'Done!  Elapsed time: %0.1f seconds\n', toc);
 fprintf(1, '\n');

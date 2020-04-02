@@ -38,7 +38,7 @@ pars.LFP_TABLE = '2020-03-25_LFP-Table.mat';
 pars.LFP_SPREADSHEET = '2020-03-25_LFP-Table.csv';
 pars.OLD_CSV_SPIKES = 'TDCS_Spikes.csv';
 
-pars.RAW_BINARY_LOCATION = 
+pars.RAW_BINARY_LOCATION = 'R:\Rat\Intan\TDCS';
 pars.STIM_EPOCH_TIMES_FILE = '_StimEpochTimes.mat';
 pars.LFP = '2017-07-13_LFP Data.mat';
 pars.DATA_STRUCTURE = '2017 TDCS Data Structure Organization.mat';

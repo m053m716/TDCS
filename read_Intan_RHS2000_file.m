@@ -353,14 +353,14 @@ if (data_present)
    
    if ~suppressAmp
       amplifier_data = zeros(num_amplifier_channels, num_amplifier_samples);
+      if (dc_amp_data_saved ~= 0)
+         dc_amplifier_data = zeros(num_amplifier_channels, num_amplifier_samples);
+      end
+      stim_data = zeros(num_amplifier_channels, num_amplifier_samples);
+      amp_settle_data = zeros(num_amplifier_channels, num_amplifier_samples);
+      charge_recovery_data = zeros(num_amplifier_channels, num_amplifier_samples);
+      compliance_limit_data = zeros(num_amplifier_channels, num_amplifier_samples);
    end
-   if (dc_amp_data_saved ~= 0)
-      dc_amplifier_data = zeros(num_amplifier_channels, num_amplifier_samples);
-   end
-   stim_data = zeros(num_amplifier_channels, num_amplifier_samples);
-   amp_settle_data = zeros(num_amplifier_channels, num_amplifier_samples);
-   charge_recovery_data = zeros(num_amplifier_channels, num_amplifier_samples);
-   compliance_limit_data = zeros(num_amplifier_channels, num_amplifier_samples);
    board_adc_data = zeros(num_board_adc_channels, num_board_adc_samples);
    board_dac_data = zeros(num_board_dac_channels, num_board_dac_samples);
    board_dig_in_data = zeros(num_board_dig_in_channels, num_board_dig_in_samples);
@@ -384,14 +384,16 @@ if (data_present)
       if (num_amplifier_channels > 0)
          if ~suppressAmp
             amplifier_data(:, amplifier_index:(amplifier_index + num_samples_per_data_block - 1)) = fread(fid, [num_samples_per_data_block, num_amplifier_channels], 'uint16')';
+            if (dc_amp_data_saved ~= 0)
+               dc_amplifier_data(:, amplifier_index:(amplifier_index + num_samples_per_data_block - 1)) = fread(fid, [num_samples_per_data_block, num_amplifier_channels], 'uint16')';
+            end
+            stim_data(:, amplifier_index:(amplifier_index + num_samples_per_data_block - 1)) = fread(fid, [num_samples_per_data_block, num_amplifier_channels], 'uint16')';
          else
             % Still need to maintain correct position in record
             [~] = fread(fid, [num_samples_per_data_block, num_amplifier_channels], 'uint16')';
-         end
-         if (dc_amp_data_saved ~= 0)
-            dc_amplifier_data(:, amplifier_index:(amplifier_index + num_samples_per_data_block - 1)) = fread(fid, [num_samples_per_data_block, num_amplifier_channels], 'uint16')';
-         end
-         stim_data(:, amplifier_index:(amplifier_index + num_samples_per_data_block - 1)) = fread(fid, [num_samples_per_data_block, num_amplifier_channels], 'uint16')';
+            [~] = fread(fid, [num_samples_per_data_block, num_amplifier_channels], 'uint16')';
+            [~] = fread(fid, [num_samples_per_data_block, num_amplifier_channels], 'uint16')';
+         end         
       end
       if (num_board_adc_channels > 0)
          board_adc_data(:, board_adc_index:(board_adc_index + num_samples_per_data_block - 1)) = fread(fid, [num_samples_per_data_block, num_board_adc_channels], 'uint16')';
@@ -447,21 +449,22 @@ if (data_present)
    % Scale voltage levels appropriately.
    if ~suppressAmp
       amplifier_data = 0.195 * (amplifier_data - 32768); % units = microvolts
+      if (dc_amp_data_saved ~= 0)
+         dc_amplifier_data = -0.01923 * (dc_amplifier_data - 512); % units = volts
+      end
+      compliance_limit_data = stim_data >= 2^15;
+      stim_data = stim_data - (compliance_limit_data * 2^15);
+      charge_recovery_data = stim_data >= 2^14;
+      stim_data = stim_data - (charge_recovery_data * 2^14);
+      amp_settle_data = stim_data >= 2^13;
+      stim_data = stim_data - (amp_settle_data * 2^13);
+      stim_polarity = stim_data >= 2^8;
+      stim_data = stim_data - (stim_polarity * 2^8);
+      stim_polarity = 1 - 2 * stim_polarity; % convert (0 = pos, 1 = neg) to +/-1
+      stim_data = stim_data .* stim_polarity;
+      stim_data = stim_parameters.stim_step_size * stim_data / 1.0e-6; % units = microamps
    end
-   if (dc_amp_data_saved ~= 0)
-      dc_amplifier_data = -0.01923 * (dc_amplifier_data - 512); % units = volts
-   end
-   compliance_limit_data = stim_data >= 2^15;
-   stim_data = stim_data - (compliance_limit_data * 2^15);
-   charge_recovery_data = stim_data >= 2^14;
-   stim_data = stim_data - (charge_recovery_data * 2^14);
-   amp_settle_data = stim_data >= 2^13;
-   stim_data = stim_data - (amp_settle_data * 2^13);
-   stim_polarity = stim_data >= 2^8;
-   stim_data = stim_data - (stim_polarity * 2^8);
-   stim_polarity = 1 - 2 * stim_polarity; % convert (0 = pos, 1 = neg) to +/-1
-   stim_data = stim_data .* stim_polarity;
-   stim_data = stim_parameters.stim_step_size * stim_data / 1.0e-6; % units = microamps
+   
    board_adc_data = 312.5e-6 * (board_adc_data - 32768); % units = volts
    board_dac_data = 312.5e-6 * (board_dac_data - 32768); % units = volts
    
@@ -556,27 +559,13 @@ if ~saveStimTimeOnly
    end
    fprintf(1, 'Type ''whos'' to see variables.\n');
 else
-   if size(board_dig_in_data,1) > 1
-      ch_names = {board_dig_in_channels.custom_channel_name};
-      idx = find(strcmpi(ch_names,'StimON'));
-      if isempty(idx)
-         t_stim = t(1,board_dig_in_data(1,:)>0);
-      else
-         t_stim = t(1,board_dig_in_data(idx,:)>0);
-      end
-   else
-      t_stim = t(1,board_dig_in_data>0);
-   end
-   t_stim_start = min(t_stim)/60;
-   t_stim_end   = max(t_stim)/60;
-   save(stimFile,'t_stim_start','t_stim_end','-v7.3');
+   extract_STIM_epoch(stimFile,board_dig_in_data,board_dig_in_channels,t);
 end
 
 fprintf(1, 'Done!  Elapsed time: %0.1f seconds\n', toc);
 fprintf(1, '\n');
 
 return
-
 
 function a = fread_QString(fid)
 

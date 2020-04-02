@@ -51,6 +51,9 @@ end
 % pars.EPOCH_NAMES = {'BASAL','STIM','POST1','POST2','POST3','POST4'}; % Labels of epochs
 % pars.EPOCH_ONSETS = [5  15 35 50 65 80]; % (Values in minutes)
 % pars.EPOCH_OFFSETS = [15 35 50 65 80 95]; % (Values in minutes)
+pars.DEF_STIM_EPOCH_START = 15; % Minutes
+pars.DEF_STIM_EPOCH_STOP = 35;  % Minutes
+pars.STIM_DIG_INDICATOR_NAME = 'StimON';
 pars.EPOCH_NAMES = {'PRE','STIM','POST'}; % epoch labels
 pars.EPOCH_ONSETS = [5 20 40]; % minutes
 pars.EPOCH_OFFSETS = [15 35 50]; % minutes
