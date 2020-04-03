@@ -36,12 +36,24 @@ function [p2pamp,ts,pmin,dt,E,Zs] = SNEO_Threshold(data,pars,art_idx)
 %
 %     Zs        :       Smoothed nonlineaer energy operator stream
 
+if nargin < 3
+   art_idx = [];
+end
+
+if nargin < 2
+   pars = struct(...
+      'SNEO_N',5,...       % Number of smoothing samples
+      'MULTCOEFF',4.5,...  % Threshold multiplier
+      'NS_AROUND',7,...    % # samples around peak to "look"
+      'PLP',20);           % Pulse lifetime period
+end
+
 % GET NONLINEAR ENERGY OPERATOR SIGNAL AND SMOOTH IT
 Y = data - mean(data);
 Yb = Y(1:(end-2));
 Yf = Y(3:end);
 Z = [0, Y(2:(end-1)).^2 - Yb .* Yf, 0]; % Discrete nonlinear energy operator
-Zs = fastsmooth(Z,pars.SNEO_N);
+Zs = eqn.fastsmooth(Z,pars.SNEO_N);
 
 % CREATE THRESHOLD FILTER
 tmpdata = data;
