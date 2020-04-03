@@ -1,7 +1,7 @@
-function [p2pamp,ts,pmin,dt,E,Zs] = SNEO_Threshold(data,pars,art_idx)
+function [p2pamp,ts_index,pmin,dt,E,Zs,thresh] = SNEO_Threshold(data,pars,art_idx)
 %SNEO_THRESHOLD   Smoothed nonlinear energy operator thresholding detect
 %
-%  [p2pamp,ts,pmin,dt,E,Zs] = SNEO_THRESHOLD(data,pars,art_idx)
+%  [p2pamp,ts_index,pmin,dt,E,Zs,thresh] = SNEO_THRESHOLD(data,pars,art_idx)
 %
 %   --------
 %    INPUTS
@@ -35,6 +35,13 @@ function [p2pamp,ts,pmin,dt,E,Zs] = SNEO_Threshold(data,pars,art_idx)
 %      E        :       Smoothed nonlinear energy operator value at peaks.
 %
 %     Zs        :       Smoothed nonlineaer energy operator stream
+%
+%     thresh    :       Struct with following fields
+%                       --> 'sneo' : SNEO threshold used
+%                       --> 'data' : Threshold used on input data for
+%                                      minimum peak height. Corresponds to
+%                                      NEGATIVE version of signal (only
+%                                      looking for negative-going peaks).
 
 if nargin < 3
    art_idx = [];
@@ -61,15 +68,16 @@ tmpdata(art_idx) = [];
 tmpZ = Zs;
 tmpZ(art_idx) = [];
 
-th = pars.MULTCOEFF * median(abs(tmpZ));
-data_th = pars.MULTCOEFF * median(abs(tmpdata));
+thresh = struct;
+thresh.sneo = pars.MULTCOEFF * median(abs(tmpZ));
+thresh.data = pars.MULTCOEFF * median(abs(tmpdata));
 
 % PERFORM THRESHOLDING
-pk = Zs > th;
+pk = Zs > thresh.sneo;
 
 if sum(pk) <= 1
    p2pamp = [];
-   ts = [];
+   ts_index = [];
    pmin = [];
    dt = [];
    return
@@ -83,13 +91,13 @@ pkloc(pkloc > numel(data)) = numel(data);
 pkloc = unique(pkloc(:));
 
 z(pkloc) = data(pkloc);
-[pmin,ts] = findpeaks(-z,... % Align to negative peak
-               'MinPeakHeight',data_th);
-E = Zs(ts);            
+[pmin,ts_index] = findpeaks(-z,... % Align to negative peak
+               'MinPeakHeight',thresh.data);
+E = Zs(ts_index);            
 
 
 % GET PEAK-TO-PEAK VALUES
-tloc = repmat(ts,2*pars.PLP+1,1) + (-pars.PLP:pars.PLP).';
+tloc = repmat(ts_index,2*pars.PLP+1,1) + (-pars.PLP:pars.PLP).';
 tloc(tloc < 1) = 1;
 tloc(tloc > numel(data)) = numel(data);
 pmax = max(data(tloc));
@@ -98,15 +106,15 @@ p2pamp = pmax + pmin;
 
 % EXCLUDE VALUES OF PMAX <= 0
 pm_ex = pmax<=0;
-ts(pm_ex) = [];
+ts_index(pm_ex) = [];
 p2pamp(pm_ex) = [];
 pmax(pm_ex) = [];
 pmin(pm_ex) = [];
 E(pm_ex) = [];
 
 % GET TIME DIFFERENCES
-if numel(ts)>1
-   dt = [diff(ts), round(median(diff(ts)))];
+if numel(ts_index)>1
+   dt = [diff(ts_index), round(median(diff(ts_index)))];
 else
    dt = [];
 end

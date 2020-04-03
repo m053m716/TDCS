@@ -26,6 +26,7 @@ if exist(outDir,'dir')==0
 end
 
 if nargout ~= 1
+   addHelperRepos();
    pars = p__.parseParameters('Exporting_To_Illustrator',varargin{:});
    fprintf(1,'\t->\tSaving: %s...',filenameString);
    pars.AutoFormat.Font = false;
