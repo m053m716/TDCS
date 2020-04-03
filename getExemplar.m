@@ -1,14 +1,25 @@
-function [raw,filt,sneo,spike,ch,fig] = getExemplar(E,F,iBlock,iCh,nSamples)
+function [raw,filt,sneo,spike,ch,fig] = getExemplar(E,F,iBlock,iCh,nSamples,tag)
 %GETEXEMPLAR  Return exemplar data
 %
+%  [raw,filt,sneo,spike] = getExemplar();
+%   --> Uses defaults for all input arguments
+%
 %  [raw,filt,sneo,spike] = getExemplar(E,F);
-%  --> Uses defaults for other 2 arguments
+%  -- Inputs --
+%   -> E : Table with STIM epoch start/stop data
+%   -> F : Organization data struct array
+%
+%  -- Output --
 %   -> raw : `raw` signal data struct for exemplar epoch ('data','t','fs')
 %   -> filt : same as `raw` but with bandpass filter & re-reference applied
 %   -> sneo : Struct with SNEO signal used for spike detection, from `filt`
 %   -> spike: Struct with spike data
-%   -> p    : Values at spike peaks (minima)
-%   -> t    : times (sec) corresponding to each sample
+%
+%     + Each struct is an array with two elements:
+%        (1) == Alignment at START of STIM epoch
+%        (2) == Alignment at END  of STIM epoch
+%        -> For any figures, these correspond to LEFT and RIGHT subset of
+%           figure panels.
 %
 %  [raw,filt,sneo,spike] = getExemplar(E,F,iBlock);
 %  --> Default `iBlock` is 10 (TDCS-28)
@@ -17,170 +28,270 @@ function [raw,filt,sneo,spike,ch,fig] = getExemplar(E,F,iBlock,iCh,nSamples)
 %  --> Default `iCh` is 1 [NOTE: This indexes files, not channels]
 %  --> Default `nSamples` is 1000 (-1000 : +1000)
 %
+%  getExemplar(__,tag)
+%  --> tag : char array to append to filename
+%   -> If no output is requested, then the figure is automatically saved
+%        and exported as a vector graphics file and .png in the location
+%        specified by:
+%        `defs.Get_Exemplar` --> `defs.FileNames('OUTPUT_FIG_DIR')`
+%
 %  [raw,filt,sneo,spike,ch,fig] = getExemplar(__);
 %  --> ch  : Return char array corresponding to channel number of file
 %  --> fig : Return handle to figure
+%   -> Figure is not automatically saved/deleted on return
+% Load default parameters
+pars = defs.Get_Exemplar();
 
-if nargin < 5
-   nSamples = 1000;
+% Parse based on different numbers of input arguments
+narg = nargin;
+switch nargin   
+   case 0
+      narg = 0;  
+      tag = pars.TAG;
+   case 1
+      if ischar(E)
+         narg = narg - 1;
+         tag = E;
+      else
+         tag = pars.TAG;
+      end
+   case 2
+      if ischar(F)
+         narg = narg - 1;
+         tag = F;
+      else
+         tag = pars.TAG;
+      end
+   case 3
+      if ischar(iBlock)
+         test = convertName2Block(iBlock);
+         if ~isnan(test)
+            iBlock = find(E.BlockID == test,1,'first');
+            tag = pars.TAG;
+         else
+            tag = iBlock;
+            narg = narg - 1;
+         end
+      else
+         tag = pars.TAG;
+      end
+   case 4
+      if ischar(iCh)
+         if ~isnan(str2double(iCh))
+            iCh = str2double(iCh);
+            tag = pars.TAG;
+         else
+            tag = iCh;
+            narg = narg - 1;
+         end
+      else
+         tag = pars.TAG;
+      end      
+   case 5
+      if ischar(nSamples)
+         tag = nSamples;
+         narg = narg - 1;
+      else
+         tag = pars.TAG;
+      end
+   case 6 % Do nothing
+      % continue
+   otherwise
+      error(['tDCS:' mfilename ':TooManyInputs'],...
+         ['\n\t->\t<strong>[TDCS.GETEXEMPLAR]:</strong> ' ...
+          'Too many input arguments\n']);
+end
+if narg < 5
+   nSamples = pars.NSAMPLES; % Default 1000 samples --> 2001 points
+end
+if narg < 4
+   iCh = pars.CHANNEL_INDEX; % Default 'Channel-008' (first channels file)
+end
+if narg < 3
+   iBlock = pars.BLOCK_INDEX; % Default (TDCS-28)
+end
+if narg < 2
+   if narg < 1
+      [F,~,E] = loadOrganizationData();
+   else
+      F = loadOrganizationData();
+   end
 end
 
-if nargin < 4
-   iCh = 1;
-end
+% Get alignment times (seconds)
+tAlign = [E.tStart(iBlock),E.tStop(iBlock)] .* 60;  % Convert to seconds
 
-if nargin < 3
-   iBlock = 10; % Default (TDCS-28)
-end
-
-tStart = E.tStart(iBlock) * 60;  % Convert to seconds
+% Get file/path info
 b = F(iBlock).base;
 spikeDir = fullfile(F(iBlock).block,[b '_wav-sneo_CAR_Spikes']);
-
-
 rawF = dir(fullfile(F(iBlock).wav.raw,[b '*Ch*.mat']));
 filtF = dir(fullfile(F(iBlock).wav.filt,[b '*Ch*.mat']));
 spikeF = dir(fullfile(spikeDir,[b '*Ch*.mat']));
-
 [~,f,~] = fileparts(rawF(iCh).name);
 nameInfo = strsplit(f,'_');
 ch = nameInfo{end};
 blockName = nameInfo{1};
+figName = sprintf('%s - Ch-%s Exemplar Data%s',blockName,ch,tag);
 
+% Load input data struct
 in = struct;
 in.raw = load(fullfile(rawF(iCh).folder,rawF(iCh).name),'data','fs');
+in.t = (0:(numel(in.raw.data)-1))/in.raw.fs; % Time in seconds
 in.filt = load(fullfile(filtF(iCh).folder,filtF(iCh).name),'data','fs');
 in.spike = load(fullfile(spikeF(iCh).folder,spikeF(iCh).name),'pars');
-in.spike.ts = [];
-in.spike.pmin = [];
-in.sneo = struct('data',[],'fs',in.filt.fs);
 
-Ntotal = numel(in.raw.data);
-t = (0:(Ntotal-1))/in.raw.fs; % Time in seconds
-
-iStart  = round(tStart * in.raw.fs);
-vec = max(1,iStart-nSamples) : min(Ntotal,iStart+nSamples);
-
-% Reduce the total number of samples needed for spike detection
-nBuffSamples = round(1.2*nSamples);
-buff_vec = max(1,iStart-nBuffSamples) : min(Ntotal,iStart+nBuffSamples);
-[~,in.spike.ts_index,in.spike.pmin,~,~,in.sneo.data,in.sneo.thresh] = ...
-   eqn.SNEO_Threshold(in.filt.data(buff_vec),in.spike.pars,[]);
-in.spike.ts_index = in.spike.ts_index + buff_vec(1) - 1;
-
-% Fix apparent time offset from shortened vector
-in.spike.ts = in.spike.ts_index ./ in.filt.fs;
-
-t = t(vec);
-raw = struct('data',in.raw.data(vec),'t',t,'fs',in.raw.fs);
-filt = struct('data',in.filt.data(vec),'t',t,'fs',in.filt.fs);
-
-% Select matched subset from SNEO stream
-sneo_idx = ismember(buff_vec,vec);
-sneo = struct('data',in.sneo.data(sneo_idx),...
-   't',t,'fs',in.filt.fs,'threshold',in.sneo.thresh.sneo);
-
-% Get reduced subset of spike based on spikes within the focused window
-spike_index = (in.spike.ts_index >= vec(1)) & (in.spike.ts_index <= vec(end));
-ts_index = in.spike.ts_index(spike_index);
-ts = in.spike.ts(spike_index);
-p = in.spike.pmin(spike_index);
-spike = struct(...
-   'peakIndices',ts_index,'peakTimes',ts,'peakValues',p,...
-   'allPeakIndices',in.spike.ts_index,'allPeakTimes',in.spike.ts,...
-   'allPeakValues',in.spike.pmin,...
-   'threshold',in.sneo.thresh.data,'pars',in.spike.pars);
+k = round(pars.SAMPLE_WEIGHTS .* nSamples);
+[raw,filt,sneo,spike] = extractTimeChunks(in,tAlign,k(:,1),k(:,2));
 
 if (nargout > 5) || (nargout < 1)
-   figName = sprintf('%s - Ch-%s Exemplar Data',blockName,ch);
-   fig = figure(...
-      'Name',figName,...
-      'Units','Normalized',...
-      'Color','w',...
-      'Position',[0.2 0.2 0.4 0.6]...
-      );
-   
-   % % % TOP AXES - RAW ACTIVITY % % %
-   ax1 = subplot(2,1,1);
-   line(ax1,raw.t,raw.data,...
-      'Color','k',...
-      'LineWidth',1.5,...
-      'DisplayName','Raw Activity');
-   ax1.YTick = [-200 0 200];
-   ax1.YColor = [0 0 0];
-   ax1.XColor = [0 0 0];
-   ax1.FontName = 'Arial';
-   ylim(ax1,[-400 200]);
-   xlim(ax1,[t(1) t(end)]);
-   ylabel(ax1,'Amplitude (\muV)','FontName','Arial','Color','k','FontSize',12);
-   xlabel(ax1,'Time (sec)','FontName','Arial','Color','k','FontSize',12);
-   
-   title(ax1,'Raw Signal','FontName','Arial','Color','k','FontSize',14);
-   legend(ax1,'Location','best');
-   
-   % % % BOTTOM AXES - UNIT ACTIVITY % % %
-   ax2 = subplot(2,1,2);
-   line(ax2,filt.t,filt.data,...
-      'Color','b',...
-      'LineWidth',1.25,...
-      'LineStyle','-',...
-      'DisplayName','Unit Activity');
-   
-   hold on;
-   line(ax2,spike.peakTimes,-spike.peakValues,...
-      'Color','k',...
-      'LineStyle','none',...
-      'Marker','o',...
-      'MarkerFaceColor','none',...
-      'MarkerEdgeColor','k',...
-      'Displayname','Spikes'...
-      );
-   th = -ones(1,numel(filt.t)).*spike.threshold;
-   line(ax2,filt.t,th,...
-      'Color',[0 0 0.8],... % Darker blue
-      'LineWidth',1.5,...
-      'LineStyle','--',...
-      'DisplayName','Unit Threshold');
-   ax2.YTick = [-100 0 100];
-   ax2.YColor = [0 0 1];
-   ylim(ax2,[-400 200]);
-   ylabel(ax2,'Amplitude (\muV)','FontName','Arial','Color','k','FontSize',12);
-   
-   
-   yyaxis(ax2,'right')
-   line(ax2,sneo.t,sneo.data,...
-      'Color','r',...
-      'LineWidth',1.25,...
-      'LineStyle',':',...
-      'DisplayName','SNEO');
-   hold on;
-   th = ones(1,numel(sneo.t)).*sneo.threshold;
-   line(ax2,sneo.t,th,...
-      'Color',[0.8 0 0],...
-      'LineWidth',1.5,...
-      'LineStyle','--',...
-      'DisplayName','SNEO Threshold');
-   sneo_max = max(sneo.data);
-   ylim(ax2,[-sneo_max, sneo_max]);
-   ax2.YScale = 'log';
-   ax2.YColor = [1 0 0 ];
-   ylabel(ax2,'SNEO (a.u.)','FontName','Arial','Color','k','FontSize',12);
-   
-   xlabel(ax2,'Time (sec)','FontName','Arial','Color','k','FontSize',12);
-   title(ax2,'Filtered Signal and Detection',...
-      'FontName','Arial','Color','k','FontSize',14);
-   legend(ax2,'Location','northoutside','Orientation','Horizontal');
-   ax2.XColor = [0 0 0];
-   ax2.FontName = 'Arial';
-   yyaxis(ax2,'left');
-   ylim(ax2,[-125 125]);
-   xlim(ax2,[t(1) t(end)]);
-   suptitle(figName);
-   
+   iThis = mapCondition(F(iBlock).conditionID);
+   fig = genExemplarPanels(figName,raw,filt,sneo,spike,iThis);
    if (nargout < 1)
-      outdir = fullfile(defs.FileNames('OUTPUT_FIG_DIR'),'Fig 3 - Exemplars');
-      batchHandleFigure(fig,defs.FileNames('OUTPUT_FIG_DIR'),figName);
+      outdir = fullfile(pars.OUTPUT_DIR,pars.OUTPUT_SUB_DIR);
+      batchHandleFigure(fig,outdir,figName);
    end
 end
+
+   function [raw,filt,sneo,spike] = extractTimeChunks(in,tAlign,nPre,nPost)
+      [raw,filt,sneo,spike] = initOutputStructArray(numel(tAlign));
+      if numel(tAlign) > 1
+         for i = 1:numel(tAlign)
+            [raw(i),filt(i),sneo(i),spike(i)] = ...
+               extractTimeChunks(in,tAlign(i),nPre(i),nPost(i));
+         end
+         return;
+      end
+      iAlign  = round(tAlign * in.raw.fs);
+      N = numel(in.raw.data);
+      vec = max(1,iAlign-nPre) : min(N,iAlign+nPost);
+
+      % Reduce the total number of samples needed for spike detection
+      nBuffSamplesPre = round(1.1*nPre);
+      nBuffSamplesPost = round(1.1*nPost);
+      bvec = max(1,iAlign-nBuffSamplesPre):min(N,iAlign+nBuffSamplesPost);
+      
+      % Create output structs
+      raw.data = in.raw.data(vec);
+      raw.t = in.t(vec);
+      raw.fs = in.raw.fs;
+      p = nPre / (nPost + nPre);
+      T = raw.t(end) - raw.t(1);
+      dt = [(p-0.1)*T, (p+0.1)*T] + raw.t(1);
+      
+      % Parse data for `raw` epoc struct
+      raw.epoc.t(1,2:5) = [raw.t(1), dt raw.t(end)];
+      if nPre < nPost
+         raw.epoc.Y(:,2:5) = getCurrentAmplitudes('Pre');
+      else
+         raw.epoc.Y(:,2:5) = getCurrentAmplitudes('Post');
+      end
+      raw.epoc.ticks = dt;                                    % To superimpose
+      raw.epoc.ticklabels = [(tAlign-30)/60,(tAlign+30)/60];  % Different timescales  
+      
+      % Parse data for `filt` struct
+      filt.data = in.filt.data(vec);
+      filt.t = in.t(vec);
+      filt.fs = in.filt.fs;
+      sneo.t = in.t(vec);
+      sneo.fs = in.filt.fs;
+      spike.pars = in.spike.pars; 
+      
+      [~,spike.peakIndices,spike.peakValues,~,~,sneo.data,thresh] = ...
+         eqn.SNEO_Threshold(in.filt.data(bvec),spike.pars,[]);
+      
+      % Fix apparent time offset from shortened vector
+      spike.peakIndices = spike.peakIndices + bvec(1) - 1;
+      spike.peakTimes = spike.peakIndices ./ in.filt.fs;
+
+      % Select matched subset from SNEO stream
+      sneo_idx = ismember(bvec,vec);
+      sneo.data = sneo.data(sneo_idx); 
+      sneo.threshold = thresh.sneo;
+
+      % Get reduced subset of spike based on spikes within the focused window
+      spike_index = (spike.peakIndices >= vec(1)) & ...
+                    (spike.peakIndices <= vec(end));
+      spike.peakIndices = spike.peakIndices(spike_index);
+      spike.peakTimes = spike.peakTimes(spike_index);
+      spike.peakValues = spike.peakValues(spike_index);
+      spike.threshold = thresh.data;
+      
+   end
+
+   function A = getCurrentAmplitudes(epochName)
+      %GETCURRENTAMPLITUDES  Return matrix of current amplitudes
+      %
+      %  A = getCurrentAmplitudes(epochName);
+      %
+      %  epochName : 'Pre' or 'Post'
+      
+      switch lower(epochName)
+         case 'pre'
+            A = [...
+                0.0  0.0  0.4  0.4; ...
+                0.0  0.0  0.2  0.2; ...
+                0.0  0.0  0.0  0.0; ...
+                0.0  0.0 -0.2 -0.2; ...
+                0.0  0.0 -0.4 -0.4  ...
+            ];
+         case 'post'
+            A = [...
+                 0.4  0.4 0.0  0.0; ...
+                 0.2  0.2 0.0  0.0; ...
+                 0.0  0.0 0.0  0.0; ...
+                -0.2 -0.2 0.0  0.0; ...
+                -0.4 -0.4 0.0  0.0 ...
+            ];
+         otherwise
+            error('Invalid epochName');
+      end
+   end
+
+   function [raw,filt,sneo,spike] = initOutputStructArray(n)
+      %INITOUTPUTSTRUCTARRAY  Initialize output data struct arrays
+      %
+      %  [raw,filt,sneo,spike] = initOutputStructArray();
+      %  --> Initialize scalar struct with correct fields for each output
+      %
+      %  [raw,filt,sneo,spike] = initOutputStructArray(n);
+      %  --> Initialize array with n elements for each output
+      
+      if nargin < 1
+         n = 1;
+      end
+      raw = struct('data',[],'t',[],'fs',[],...
+         'epoc',struct('t',nan(1,6),'Y',nan(5,6),...
+         'ticks',nan(1,2),'ticklabels',nan(1,2)));
+      raw = repmat(raw,n,1);
+      filt = struct('data',[],'t',[],'fs',[]);
+      filt = repmat(filt,n,1);
+      sneo = struct('data',[],'t',[],'fs',[],'threshold',[]); 
+      sneo = repmat(sneo,n,1);
+      spike = struct('peakIndices',[],'peakTimes',[],'peakValues',[],'threshold',[],'pars',struct);  
+      spike = repmat(spike,n,1);
+   end
+
+   function iThis = mapCondition(conditionID)
+      %MAPCONDITION  Returns integer [1 - 5] indicating mapping from ID
+      %
+      %  iThis = mapCondition(conditionID);
+      
+      switch conditionID
+         case 1
+            iThis = 3;
+         case 2
+            iThis = 3;
+         case 3
+            iThis = 4;
+         case 4
+            iThis = 2;
+         case 5
+            iThis = 5;
+         case 6
+            iThis = 1;
+         otherwise
+            error('Bad conditionID: %g',conditionID);
+      end
+   end
 
 end

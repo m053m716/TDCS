@@ -70,6 +70,9 @@ genSpikeRatePanelFigure(data.delta_spikes,...
 % Export LvR figures
 genRainCloudPlots(data.LvR);
 
+% Export Exemplar panels
+getExemplar();
+
 %% Export decimated (raw) data for LFP extraction
 
 %% Export LFP statistics and figures
