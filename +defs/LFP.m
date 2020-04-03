@@ -8,7 +8,7 @@ function varargout = LFP(varargin)
 % DEFAULTS
 % Main options
 pars = struct;
-pars.N_BIN_PER_BAND = 10;
+pars.N_BIN_PER_BAND = 20;
 pars.N_BIN_PER_EPOCH = 100; 
 pars.DB_INTERACTION_MODE = 'update'; % Can be 'update' or 'append'
 pars.LFP_DATA_TAG = '_REF_';

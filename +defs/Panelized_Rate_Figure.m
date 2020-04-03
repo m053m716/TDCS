@@ -21,7 +21,6 @@ pars.FIG_POS = [0.15 0.2 0.35 0.70];
 
 % Plotting parameters: `gfx__.plotWithShadedError`
 pars.ALPHA = 0.001;
-pars.SIG_STR = 'Significant (\\alpha = %s)';
 pars.MAIN_LINEWIDTH = 2.0;
 pars.ANNOTATION = 'on';
 pars.ERROR_COEFF = 1.0;     % # of 'SEM' or 'SD' to shade
@@ -49,7 +48,8 @@ pars.SIG_LINEJOIN  = 'chamfer'; % 'chamfer','miter','round' are options
 pars.SIG_Y_BRACKET = 65;
 pars.SIG_Y_TICK =    61;  
 pars.SIG_SHOW_PROBABILITY = true;
-pars.SIG_TEST = @ttest2;
+pars.SIG_TEST = @alltests; % @ttest2 | @kstest2 | @ranksumtest | @adtest2 |@alltests
+pars.SIG_STR = 'Significant (''%s''|\\alpha = %s)';
 % For replications selection:
 % Lowest integer to remove significance from PRE epoch
 

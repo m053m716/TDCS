@@ -74,4 +74,10 @@ genRainCloudPlots(data.LvR);
 
 %% Export LFP statistics and figures
 data.LFP = loadLFP_Table;
+
+% Export "RainCloudPlots" for discrete Frequency-Band power
 genLFPRainCloudPlots(data.LFP);
+
+% Export LFP Spectra figures (def. alpha = 0.05)
+genLFPSpectraPanelFigure(data.S,'SIG_SHOW_PROBABILITY',true); 
+genLFPSpectraPanelFigure(data.S,'SIG_SHOW_PROBABILITY',false);

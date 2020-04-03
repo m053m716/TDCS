@@ -67,7 +67,7 @@ Z = cell2mat(Z);
 % Plot each sub-panel according to array
 ax = ui__.panelizeAxes(fig,pars.N_INTENSITY,pars.N_POLARITY);
 ax = flipud(ax); % Put the "top" axes at the "top" of the array
-sigName = sprintf(pars.SIG_STR,pars.ALPHA);
+sigName = sprintf(pars.SIG_STR,char(pars.SIG_TESTFCN),pars.ALPHA);
 
 for iRow = 1:pars.N_INTENSITY
    for iCol = 1:pars.N_POLARITY

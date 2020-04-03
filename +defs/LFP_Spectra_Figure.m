@@ -9,22 +9,20 @@ function varargout = LFP_Spectra_Figure(varargin)
 pars = struct;
 [pars.DIR,pars.FNAME] = ...
    defs.FileNames('OUTPUT_FIG_DIR','PANEL_SPECTRUM_FIGURE_NAME');
-[pars.POL_ID,pars.NAME,pars.COLORS,...
-   pars.EPOCH_COL_FACTOR,pars.EPOCH_NAMES] = ...
+[pars.POL_ID,pars.NAME,pars.COLORS,pars.EPOCH_NAMES] = ...
       defs.Experiment('CURRENT_ID','NAME_KEY',...
-         'CONDITION_COL','EPOCH_COL_FACTOR','EPOCH_NAMES');
+         'CONDITION_CUR_COL','EPOCH_NAMES');
 pars.DIR = fullfile(pars.DIR,'LFP-Spectra');
 pars.TAG = ''; % For file naming
 
 % Plotting parameters: `gfx__.plotWithShadedError`
 pars.ALPHA = 0.05;
-pars.SIG_STR = 'Significant (\\alpha = %s)';
 pars.C_IDX = [5,6];
 pars.YLIM = [-2,2];
 pars.MAIN_LINEWIDTH = 2.0;
 pars.ANNOTATION = 'on';
 pars.ERROR_COEFF = 1;    % # of 'SEM' or 'SD' to shade
-pars.ERROR_TYPE = 'SEM'; % Can be 'SEM' or 'SD'
+pars.ERROR_TYPE  = 'SEM'; % Can be 'SEM' or 'SD'
 
 % Legend parameters
 pars.LEGEND_AXES_ADDRESS = [2,2];
@@ -34,14 +32,19 @@ pars.LEGEND_FONTCOLOR = 'black';
 pars.LEGEND_LOCATION = 'best';
 pars.LEGEND_BOX = 'off';
 pars.LEGEND_BGCOLOR = 'none';
+pars.LEGEND_POSITION = [0.30 0.65 0.50 0.075];
 
 % Plotting parameters: `gfx__.addSignificanceLine`
 pars.SIG_LINEWIDTH = 2.0;
-pars.SIG_COLOR     = [0.25 0.25 0.85]; % Lighter blue
+pars.SIG_COLOR     = [0.15 0.15 0.15]; % Dark-grey
 pars.SIG_LINEJOIN  = 'chamfer'; % 'chamfer','miter','round' are options
-pars.SIG_YTOP = 1.25;  % Set greater than 1 because axes expanded later
-pars.SIG_YBOT = 1.20;  % Set greater than 1 because axes expanded later
+pars.SIG_YTOP = 1.45;  % Fixed (z-score) for bracket "top"
+pars.SIG_YBOT = 1.42;  % Fixed (z-score) for bracket "tick"
 pars.SIG_REPEATED = 0; % Do not require repeated
+pars.SIG_ANNOTATION = 'on';
+pars.SIG_SHOW_PROBABILITY = true;
+pars.SIG_STR = 'Significant (''%s''|\\alpha = %s)';
+pars.SIG_TESTFCN = @alltests;
 
 % Axes properties for `label__.setEvenLimits`
 pars.XLABEL = 'Frequency (Hz)';
@@ -49,6 +52,7 @@ pars.XLIM = [0 110]; % Add small buffer to right of axes (max freq = 105)
 pars.XSCALE = 'log'; % Essentially makes it a log-log plot
 pars.XTICK =    [0   5  7   10  30  50  80  100];
 pars.XTICKLAB = {'','5','','10','','50','','100'};
+pars.YLIM = [-1.5 1.5];
 pars.YLABEL = '\Delta (log(P))';
 
 if nargin < 1
