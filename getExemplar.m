@@ -144,8 +144,8 @@ k = round(pars.SAMPLE_WEIGHTS .* nSamples);
 [raw,filt,sneo,spike] = extractTimeChunks(in,tAlign,k(:,1),k(:,2));
 
 if (nargout > 5) || (nargout < 1)
-   iThis = mapCondition(F(iBlock).conditionID);
-   fig = genExemplarPanels(figName,raw,filt,sneo,spike,iThis);
+   figPars = mapCondition(F(iBlock).conditionID,pars.COLORS);
+   fig = genExemplarPanels(figName,raw,filt,sneo,spike,figPars);
    if (nargout < 1)
       outdir = fullfile(pars.OUTPUT_DIR,pars.OUTPUT_SUB_DIR);
       batchHandleFigure(fig,outdir,figName);
@@ -271,27 +271,37 @@ end
       spike = repmat(spike,n,1);
    end
 
-   function iThis = mapCondition(conditionID)
-      %MAPCONDITION  Returns integer [1 - 5] indicating mapping from ID
+   function pars = mapCondition(conditionID,colors)
+      %MAPCONDITION  Return condition-specific parameters 
       %
-      %  iThis = mapCondition(conditionID);
+      %  pars = mapCondition(conditionID);
       
       switch conditionID
          case 1
             iThis = 3;
+            C = colors{3,2};
          case 2
             iThis = 3;
+            C = colors{2,2};
          case 3
             iThis = 4;
+            C = colors{1,2};
          case 4
             iThis = 2;
+            C = colors{1,1};
          case 5
             iThis = 5;
+            C = colors{2,1};
          case 6
             iThis = 1;
+            C = colors{3,1};
          otherwise
             error('Bad conditionID: %g',conditionID);
       end
+      pars = struct;
+      pars.iThis = iThis;
+      pars.C = C;
+      pars.doCurrentLines = true;
    end
 
 end

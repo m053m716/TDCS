@@ -13,6 +13,7 @@ pars.CHANNEL_INDEX = 1; % Channel index 1 ('Channel-008')
 pars.BLOCK_INDEX = 10;  % Row 10: Corresponds to TDCS-28
 pars.OUTPUT_SUB_DIR = 'Fig 3 - Exemplars'; % Subfolder in Figures folder
 pars.OUTPUT_DIR = defs.FileNames('OUTPUT_FIG_DIR'); % Figure output default
+pars.COLORS = defs.Experiment('CONDITION_CUR_COL');
 
 if nargin < 1
    varargout = {pars};   
