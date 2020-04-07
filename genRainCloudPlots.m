@@ -178,7 +178,7 @@ for i = 1:nI
          'raindrop_size',pars.RAINDROP_SIZE,...
          'raindrop_alpha',pars.RAINDROP_ALPHA,...
          'colours',colIntensity{i,k});
-      if iThis == 1
+      if i == 3
          xlabel(ax(i,k),pars.XLAB);
       end
       if k == 1
@@ -200,19 +200,27 @@ else
 end
    
 % BY BOTH
+r = groot;
+if size(r.MonitorPositions,1) > 1
+   figPos = pars.FIG_POS_C2;
+else
+   figPos = pars.FIG_POS_C;
+end
 fig(iFig,1) = figure('Name',pars.BY_TREATMENT_BY_EPOCH_FIG_NAME,...
        'Units','Normalized',...
-       'Position',pars.FIG_POS_C,...
+       'Position',figPos,...
        'Color','w');
 ax = ui__.panelizeAxes(fig(iFig,1),nI,nP);
-epochNames = pars.EPOCH_NAMES;
+ax = flipud(ax);
+epochNames = fliplr(pars.EPOCH_NAMES);
 connMat = diag(ones(nE-1,1),1);
 tag = cell(nE);
 for i = 1:nI
    iThis = uIntensity(i);
    for k = 1:nP
       kThis = uPolarity(k);
-      d = cell(nE);
+      axes(ax(i,k)); %#ok<LAXES> % Set the current axes
+      d = cell(nE,nE);
       if ismember(T.Properties.VariableNames,'NSamples')
          tag{2,2} = sprintf('N = %g',sum(T.NSamples(...
                                       (Intensity == iThis) & ...
@@ -228,10 +236,8 @@ for i = 1:nI
                   (Epoch == eThis));
          d{eThis,eThis} = data(iMask);
       end
-      c = repmat(colIntensity{iThis,k},nE,1);
-%       c(2,:) = [0.05 0.05 0.05];
-%       c(3:end,:) = c(3:end,:) .* 0.75;
-      batch_raincloud(ax(iThis,k),d,...
+      c = repmat(colIntensity{i,k},nE,1);
+      batch_raincloud(ax(i,k),d,...
          'plot_top_to_bottom',1,...
          'raindrop_size',15,...
          'plot_raindrop',false,...
@@ -243,19 +249,19 @@ for i = 1:nI
          'text_tagx_offset',pars.TEXT_TAGX_OFFSET,...
          'ks_offsets',pars.KS_OFFSETS,...
          'text_tag',tag);
-      if iThis == 1
+      if i == 1
          xlabel(ax(i,k),pars.XLAB);
       end
       if k == 1
-         ylabel(ax(i,k),pars.YLAB);
+         ylabel(ax(iThis,k),pars.YLAB);
       end
-      title(ax(iThis,k),treatmentName{iThis,k});
-      ax(iThis,k) = label__.ax2D(ax(iThis,k),...
+      title(ax(i,k),treatmentName{i,k});
+      ax(i,k) = label__.ax2D(ax(i,k),...
          'YLIM',pars.YLIM_CROSSED,...
          'XLIM',pars.XLIM_CROSSED,...
          'XTICK',pars.XTICK_CROSSED,...
          'YTICK',pars.YTICK_CROSSED,...
-         'YTICKLAB',fliplr(epochNames)); % First goes at top (raincloud-specific)
+         'YTICKLAB',epochNames); % First goes at top (raincloud-specific)
    end
 end
 

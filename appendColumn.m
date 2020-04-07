@@ -45,7 +45,7 @@ if iscell(C{1})
    data = cellfun(@(varargin)targetFcn(varargin{:}),C{:},...
       'UniformOutput',isUniform);
 else
-   data = targetFcn(C{:},'UniformOutput',isUniform);
+   data = targetFcn(C{:});
 end
 T.(newColName) = data;
 
@@ -60,7 +60,8 @@ end
       %  C = packageColumnVectors(T,targetColName);
       
       if ischar(targetColName) || isstring(targetColName)
-         C = {T.(targetColName)};
+         C = cell(1,1);
+         C{1,1} = T.(targetColName);
          return;
       end
       

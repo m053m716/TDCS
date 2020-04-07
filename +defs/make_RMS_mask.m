@@ -8,12 +8,12 @@ pars = struct;
 % DEFAULTS
 pars.DIR = 'P:\Rat\tDCS';                       % Tank path
 pars.FILE = defs.FileNames('RMS_MASK_FILE');    % Filename of RMS mask file
-pars.BIN  = defs.Experiment('DS_BIN_DURATION'); % Seconds
+[pars.BIN,pars.RAW_TAG,pars.RMS_THRESH]  = defs.Experiment(...
+   'DS_BIN_DURATION','RAW_TAG','RMS_THRESH'); % DS_BIN_DURATION: Seconds
 pars.SKIP_IF_FILE_PRESENT = true;  % Do not overwrite old file if it exists
 
 % FOR SLIDINGPOWER
 pars.RMS = defs.SlidingPower();
-pars.RMS_THRESH = 150; % micro-volts; 1-s sliding-window RMS threshold
 pars.INFO_FILE = '_GenInfo.mat';
 
 % FOR EXTRACT_COMMON_AVERAGE
@@ -22,7 +22,6 @@ pars.OUTFILE_TYPE_TAG = '_DS';
 pars.INFILE_CHANNEL_TOKEN = '_Ch_';
 pars.INFILE_DELIM = '_DS_';
 pars.OUTFILE_DELIM = '_REF_';
-pars.RAW_TAG = defs.Experiment('RAW_TAG');
 
 if nargin < 1
    varargout = {pars};   

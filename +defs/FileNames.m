@@ -58,12 +58,14 @@ pars.PANEL_SPECTRUM_FIGURE_NAME = 'LFP Spectrum Panelized Changes';
 pars.PANEL_RATE_FIGURE_NAME = 'Spike Rate Panelized Changes';
 pars.LFP_TABLE = '2020-03-25_LFP-Table.mat';
 pars.LFP_SPREADSHEET = '2020-03-25_LFP-Table.csv';
-pars.OLD_CSV_SPIKES = 'TDCS_Spikes.csv';
+pars.LVR_RM_ANOVA_FILE = '2020-04-07_RM-ANOVA-LvR.mat'; % Results of stats.fit.LvR_RM_Model
+
 
 % Deprecated
 pars.OUTPUT_STATS_DIR_CSV = 'J:\Rat\tDCS\2020_Stats';
 pars.OUTPUT_STATS_DIR_MAT = fullfile(pars.OUTPUT_STATS_DIR_CSV,'_mat');
-pars.OUTPUT_STATS_DIR_SPIKES = 'J:\Rat\tDCS\2020_Stats\scratchwork\Spikes';
+pars.OUTPUT_STATS_DIR_SPIKES = 'J:\Rat\tDCS\2020_Stats\2020-03-17_1s-bin_Analyses\scratchwork\Spikes';
+pars.OLD_CSV_SPIKES = 'TDCS_Spikes.csv';
 pars.DATABASE = 'Stats'; % Name of SQLExpress Statistics server on CPL-VISION
 pars.DATABASE_LFP = struct('Atomic','Stats.dbo.LFPid','Key','Stats.dbo.LFPkey'); 
 pars.LFP = '2017-07-13_LFP Data.mat';

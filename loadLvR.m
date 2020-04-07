@@ -1,7 +1,7 @@
-function [T,f] = loadDeltaLvR()
+function [T,f] = loadLvR()
 %LOADDELTASPIKERATE  Loads table of 'Delta LvR' data
 %
-%  [T,f] = loadDeltaLvR()
+%  [T,f] = loadLvR()
 %  --> T : Table with data
 %  --> f : Name of file
 
@@ -19,5 +19,7 @@ if ~isfield(in,'T')
    return;
 end
 T = in.T;
+T(isnan(T.LvR),:) = [];
+T = setTableOutcomeVariable(T,'LvR','');
 
 end

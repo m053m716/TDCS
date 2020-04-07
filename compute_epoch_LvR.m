@@ -9,7 +9,7 @@ function T_LvR = compute_epoch_LvR(T,varargin)
 %  T        :  Table with spike trains in 'Train' variable as sparse
 %                     vectors sampled at rate in 'FS' variable.
 %     --> Loaded using 
-%        >> T = loadSpikeTrains_Table('D:\MATLAB\Data\tDCS');
+%        >> T = loadSpikeSeries_Table('D:\MATLAB\Data\tDCS');
 %  e.g. `data.raw_spikes` in `main.m`
 %
 %  varargin :  Parameters struct or 'NAME',value input argument pairs to
@@ -48,11 +48,15 @@ h = waitbar(0,'Computing LvR...');
 iRow = 0;
 for ii = 1:nRowOriginal   
    train = T.Train{ii};
-   Mask = replicateColumnVar(T.mask{ii}.',T.FS(ii)*pars.DS_BIN_DURATION).';
+   % Get Mask at the correct sample rate:
+%    Mask = replicateColumnVar(T.mask{ii},T.FS(ii)*pars.DS_BIN_DURATION).';
+%    Mask = replicateColumnVar(T.fine_mask{ii},T.FS(ii));
+   Mask = repmat(T.fine_mask{ii},T.FS(ii),1);
+   Mask = (Mask(:)).';
    for iEpoch = 1:nEpoch
       iRow = iRow + 1;
       v = vec{ii,iEpoch};
-      m = Mask(v);
+      m = ~Mask(v);
       ts = find(train(v(m))) ./ T.FS(ii);
       LvR(iRow) = eqn.LvR(ts);
       N(iRow) = numel(ts);

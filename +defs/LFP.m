@@ -12,16 +12,14 @@ pars.N_BIN_PER_BAND = 20;
 pars.N_BIN_PER_EPOCH = 100; 
 pars.DB_INTERACTION_MODE = 'update'; % Can be 'update' or 'append'
 pars.LFP_DATA_TAG = '_REF_';
-pars.OUTPUT_FIG_DIR = defs.FileNames('OUTPUT_FIG_DIR');
-pars.OUTPUT_STATS_DIR_CSV = defs.FileNames('OUTPUT_STATS_DIR_CSV');
-pars.OUTPUT_STATS_DIR_MAT = defs.FileNames('OUTPUT_STATS_DIR_MAT');
-pars.RMS_MASK_FILE = defs.FileNames('RMS_MASK_FILE');
-pars.LFP_FILE = defs.FileNames('LFP_FILE');
-pars.LFP_STATS_FILE = defs.FileNames('LFP_STATS_FILE');
-pars.LFP_RM_STATS_FILE = defs.FileNames('LFP_RM_STATS_FILE');
+[pars.OUTPUT_FIG_DIR,pars.OUTPUT_STATS_DIR_CVS,pars.OUTPUT_STATS_DIR_MAT,...
+   pars.RMS_MASK_FILE,pars.LFP_FILE,pars.LFP_STATS_FILE,...
+   pars.LFP_RM_STATS_FILE] = ...
+   defs.FileNames(...
+      'OUTPUT_FIG_DIR','OUTPUT_STATS_DIR_CSV','OUTPUT_STATS_DIR_MAT',...
+      'RMS_MASK_FILE','LFP_FILE','LFP_STATS_FILE','LFP_RM_STATS_FILE');
 pars.LFP_SPECTRA_FIG_FILE = ''; % To export, set this non-empty
 pars.WLEN = defs.SlidingPower('WLEN');
-pars.EPOCH_MASK_INDICES = defs.Experiment('EPOCH_MASK_INDICES');
 pars.NSAMPLES_COV = 61; % How many samples "forward" and "backward" to use to estimate covariance matrix
 pars.DESCRIPTION = struct(...
    'P', struct(...
@@ -49,9 +47,9 @@ pars.FC.Low_Gamma    = [30  50];
 pars.FC.High_Gamma   = [70 105];
 
 % From generic "Experiment" defaults:
-pars.EPOCH_NAMES = defs.Experiment('EPOCH_NAMES'); % {'BASAL','STIM','POST1','POST2','POST3','POST4'}; % Labels of epochs
-pars.EPOCH_ONSETS = defs.Experiment('EPOCH_ONSETS'); % [5  15 35 50 65 80]; % (Values in minutes)
-pars.EPOCH_OFFSETS = defs.Experiment('EPOCH_OFFSETS'); % [15 35 50 65 80 95]; % (Values in minutes)
+[pars.EPOCH_NAMES,pars.EPOCH_ONSETS,pars.EPOCH_OFFSETS,pars.EPOCH_MASK_INDICES] ...
+   = defs.Experiment(...
+   'EPOCH_NAMES','EPOCH_ONSETS','EPOCH_OFFSETS','EPOCH_MASK_INDICES');
 pars.TLIM_LABS = [0 2];
 
 % These are parsed based on fields of pars.FC (LFP bands)

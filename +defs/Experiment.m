@@ -61,6 +61,7 @@ pars.EPOCH_MASK_INDICES = {301:900,1201:2100,2401:3000}; % For anything binned i
 pars.EPOCH_COL = defs.EpochColors(pars.EPOCH_NAMES{:});
 pars.DS_BIN_DURATION = 30; % Seconds (bin-width for LFP power or spike rate estimation)
 pars.FS_DECIMATED = 1000; % (Hz); decimated sample rate
+pars.RMS_THRESH = 150; % micro-volts; 1-s sliding-window RMS threshold
 
 % Path info
 % pars.PROCESSED_TANK = 'P:\Rat\tDCS';

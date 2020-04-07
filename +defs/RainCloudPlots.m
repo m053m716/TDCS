@@ -39,7 +39,7 @@ pars.XTICKLAB = 'auto';
 pars.XTICK_CROSSED = [0.5, 1.5, 2.5];
 pars.XLIM_CROSSED = [-0.5 4];
 pars.YTICK_CROSSED = [6 8 10];
-pars.YLIM_CROSSED = [4 15];
+pars.YLIM_CROSSED = [4 18];
 pars.TEXT_X_OFFSET = 1.5;
 pars.TEXT_TAGX_OFFSET = 0.25;
 pars.KS_OFFSETS = 0:2:10;
@@ -66,8 +66,11 @@ pars.EPOCH_COL_FACTOR = pars.EPOCH_COL_FACTOR';
    'BY_TREATMENT_FILE_NAME','BY_TREATMENT_BY_EPOCH_FIG_NAME',...
    'BY_TREATMENT_BY_EPOCH_FILE_NAME');
 pars.FIG_POS_A = [rand(1)*0.05+0.2,rand(1)*0.05+0.175,0.5,0.6];
+pars.FIG_POS_A2 = [rand(1)*0.05+1.025,rand(1)*0.05+0.025,0.5,0.4];
 pars.FIG_POS_B = [rand(1)*0.10+0.2,rand(1)*0.10+0.175,0.5,0.6];
+pars.FIG_POS_B2 = [rand(1)*0.10+1.025,rand(1)*0.10+0.025,0.5,0.4];
 pars.FIG_POS_C = [rand(1)*0.05+0.2,rand(1)*0.05+0.175,0.6,0.7];
+pars.FIG_POS_C2 = [rand(1)*0.05+1.025,rand(1)*0.025+0.05,0.6,0.65];
 
 if nargin < 1
    varargout = {pars};   

@@ -39,6 +39,7 @@ if numel(epochIndex) > 1
    return;
 end
 
+% 'N' corresponds to "(sub)samples per step"
 if ~ismember('N',T.Properties.VariableNames)
    if ismember('Train',T.Properties.VariableNames) % Then it's Raw spikes
       [FS,~,idx] = unique(T.FS);

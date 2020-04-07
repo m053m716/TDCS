@@ -68,7 +68,16 @@ genSpikeRatePanelFigure(data.delta_spikes,...
    'SIG_TEST',@alltests); % Uses supremum of p[obs] of 4 tests
 
 % Export LvR figures
+if ~isfield(data,'LvR')
+   data.LvR = loadLvR();
+end
 genRainCloudPlots(data.LvR);
+
+% Export LvR stats
+% S = stats.make.LvRTable(data.LvR);
+% [rm,ranovatbl,A,C,D] = stats.fit.LvR_RM_Model(S);
+% save(fullfile(dataTank,defs.FileNames('LVR_RM_ANOVA_FILE')),...
+%       'S','rm','ranovatbl','A','C','D','-v7.3');
 
 % Export Exemplar panels
 getExemplar();
