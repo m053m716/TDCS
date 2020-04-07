@@ -228,7 +228,7 @@ for i = 1:nI
                   (Epoch == eThis));
          d{eThis,eThis} = data(iMask);
       end
-      c = repmat(colIntensity{iThis,k},nE,1) .* pars.EPOCH_COL_FACTOR;
+      c = repmat(colIntensity{iThis,k},nE,1);
 %       c(2,:) = [0.05 0.05 0.05];
 %       c(3:end,:) = c(3:end,:) .* 0.75;
       batch_raincloud(ax(iThis,k),d,...
