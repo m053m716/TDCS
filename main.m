@@ -13,6 +13,10 @@
 %  >> pars = parseParameters('defsFunctionName',varargin{:});
 %  >> e.g.
 %  >> pars = parseParameters('FileNames',varargin{:});
+%
+%
+%  NOTE: Can use `data = loadDataStruct();` to get the same data structure
+%  as generated below if the files that go into `data` exist already.
 
 %% Clear workspace and begin main timer
 clear; clc;
