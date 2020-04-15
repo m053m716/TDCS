@@ -75,7 +75,7 @@ genSpikeRatePanelFigure(data.delta_spikes,...
 if ~isfield(data,'LvR')
    data.LvR = loadLvR();
 end
-genRainCloudPlots(data.LvR);
+genRainCloudPlots(data.LvR,'TAG','LvR');
 
 % Export LvR stats
 % S = stats.make.LvRTable(data.LvR);
@@ -86,7 +86,8 @@ genRainCloudPlots(data.LvR);
 % Export Exemplar panels
 getExemplar();
 
-%% Export decimated (raw) data for LFP extraction
+%% Run cross-correlation analysis
+make.xcorr.panel_by_recording(data.binned_spikes,E,blockID);
 
 %% Export LFP statistics and figures
 data.LFP = loadLFP_Table;

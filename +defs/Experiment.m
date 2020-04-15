@@ -62,6 +62,9 @@ pars.EPOCH_COL = defs.EpochColors(pars.EPOCH_NAMES{:});
 pars.DS_BIN_DURATION = 30; % Seconds (bin-width for LFP power or spike rate estimation)
 pars.FS_DECIMATED = 1000; % (Hz); decimated sample rate
 pars.RMS_THRESH = 150; % micro-volts; 1-s sliding-window RMS threshold
+pars.RATE_SAMPLES_PER_XCORR = 10; % # samples per window
+pars.RATE_NSD_THRESH = 4; % For rate exclusion
+pars.RATE_TRANSFORM_FCN = @(x)sqrt(x); % Transform for rate samples (e.g. @(x)x for no transform)
 
 % Path info
 % pars.PROCESSED_TANK = 'P:\Rat\tDCS';
