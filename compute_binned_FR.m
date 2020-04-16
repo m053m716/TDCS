@@ -72,6 +72,7 @@ T.Properties.VariableDescriptions{idx} = 'FS: Sample rate of original record';
 
 
 T.Properties.UserData = pars; % Save parameters with smaller table
+T.Properties.UserData.TABLE_TYPE = 'binned_FR';
 fprintf(1,'\t->\t');
 toc(subtic);
 

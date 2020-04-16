@@ -58,7 +58,7 @@ for ii = 1:nRowOriginal
       v = vec{ii,iEpoch};
       m = ~Mask(v);
       ts = find(train(v(m))) ./ T.FS(ii);
-      LvR(iRow) = eqn.LvR(ts);
+      LvR(iRow) = eqn.LvR(ts,pars.R);
       N(iRow) = numel(ts);
    end
    waitbar(ii/nRowOriginal);
@@ -81,5 +81,7 @@ T_LvR.Properties.VariableDescriptions = {...
    'N: Number of spikes in non-masked period of this epoch'; ...
    'LvR: Modified local coefficient of variation' ...
    };
+T_LvR.Properties.UserData = pars;
 T_LvR = setTableOutcomeVariable(T_LvR,'LvR');
+T_LvR.TABLE_TYPE = 'LvR';
 end

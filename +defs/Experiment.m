@@ -65,6 +65,7 @@ pars.RMS_THRESH = 150; % micro-volts; 1-s sliding-window RMS threshold
 pars.RATE_SAMPLES_PER_XCORR = 10; % # samples per window
 pars.RATE_NSD_THRESH = 4; % For rate exclusion
 pars.RATE_TRANSFORM_FCN = @(x)sqrt(x); % Transform for rate samples (e.g. @(x)x for no transform)
+pars.LVR_R = 0.0015; % "Refractoriness" constant to decorrelate local variation from spike rate using LvR algorithm
 
 % Path info
 % pars.PROCESSED_TANK = 'P:\Rat\tDCS';

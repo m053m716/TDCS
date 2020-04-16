@@ -111,6 +111,7 @@ C = table(BlockID,AnimalID,ConditionID,Channel,Channel_Pair,CurrentID,r);
 C.Properties.Description = 'Table of channel-wise cross-correlations';
 C.Properties.UserData = pars; % Save parameters
 C.Properties.UserData.BINNED_SPIKES_TABLE_PARS = T.Properties.UserData;
+C.Properties.UserData.TABLE_TYPE = 'xcorr_FR';
 
 
 end

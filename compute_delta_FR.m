@@ -68,6 +68,7 @@ T.Properties.Description = ...
     '`delta_sqrt_Rate` computed using `eqn.delta_F` function'];
 T.Properties.UserData = pars;
 T.Properties.UserData.SQUARE_ROOT_TRANSFORM = true;
+T.Properties.UserData.TABLE_TYPE = 'delta_FR';
 fprintf(1,'\t->\t');
 toc(subtic);
 

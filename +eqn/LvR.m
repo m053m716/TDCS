@@ -1,4 +1,4 @@
-function LvR_out = LvR(t,R)
+function [LvR_out,R] = LvR(t,R)
 %LVR Returns the modified Coefficient of Variation for a set of spikes
 %
 %  LvR_out = eqn.LvR(t);
@@ -6,7 +6,9 @@ function LvR_out = LvR(t,R)
 %  --> Note, this was set empirically based on correlation between output
 %      LvR vs multi-unit spike rates we observed
 %
-%  LvR_out = eqn.LvR(t,R);
+%  [LvR_out,R] = eqn.LvR(t,R);
+%  --> Can get value of parameter R as second output; can also set it using
+%        second input argument.
 %
 %  -- Input --
 %  t        :  Numeric vector of spike timestamps (seconds)
@@ -20,8 +22,9 @@ function LvR_out = LvR(t,R)
 %  Differentiation of Cerebral Cortex.' Shinomoto et al. (2009)
 
 % Parameters
-%Default
-R = 0.005;          %Refractoriness (s)
+if nargin < 2
+   R = defs.Experiment('LVR_R');          %Refractoriness (s)
+end
 
 % Fix dimension of t
 t = reshape(t,1,numel(t));
