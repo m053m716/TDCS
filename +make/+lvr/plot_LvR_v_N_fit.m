@@ -48,7 +48,7 @@ POINT_SIZE_MIN =  2;        % Minimum Size of scatter data (unit: points)
 FIG_NAME_EXPR = 'Fit: log(N) vs LvR | R = %3.1fms';
 
 if nargin < 2
-   R = 0.0015;
+   R = T.Properties.UserData.R;
 end
 
 fname = sprintf(FIG_NAME_EXPR,R*1e3);

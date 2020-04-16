@@ -37,7 +37,7 @@ LINE_WIDTH = 2.5;           % For kernel density estimate curve
 
 FIG_NAME_EXPR = 'Distribution: LvR | R = %3.1fms';
 if nargin < 2
-   R = 0.0015;
+   R = T.Properties.UserData.R;
 end
 if nargin < 3
    xLim = [];

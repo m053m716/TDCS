@@ -83,5 +83,5 @@ T_LvR.Properties.VariableDescriptions = {...
    };
 T_LvR.Properties.UserData = pars;
 T_LvR = setTableOutcomeVariable(T_LvR,'LvR');
-T_LvR.TABLE_TYPE = 'LvR';
+T_LvR.Properties.UserData.TABLE_TYPE = 'LvR';
 end

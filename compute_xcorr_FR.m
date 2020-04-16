@@ -107,7 +107,7 @@ end
 % scale within the same bounds).
 r = cellfun(@(x)x-mu,r,'UniformOutput',false);
 
-C = table(BlockID,AnimalID,ConditionID,Channel,Channel_Pair,CurrentID,r);
+C = table(BlockID,AnimalID,CurrentID,ConditionID,Channel,Channel_Pair,r);
 C.Properties.Description = 'Table of channel-wise cross-correlations';
 C.Properties.UserData = pars; % Save parameters
 C.Properties.UserData.BINNED_SPIKES_TABLE_PARS = T.Properties.UserData;
