@@ -23,7 +23,6 @@ clear; clc;
 maintic = tic;
 
 %% Main path info is where is the data stored
-dataTank = defs.FileNames('DIR');
 data = struct;  % Initialize main data struct
 addHelperRepos; % Add any helper repositories as needed
 
@@ -31,20 +30,23 @@ addHelperRepos; % Add any helper repositories as needed
 F = loadOrganizationData;
 make_RMS_mask(F);         % Makes RMS mask based on DS "common-reference" data
 T = loadRMSMask_Table(F); % Organize all RMS data into a table
-save(fullfile(dataTank,defs.FileNames('MASK_TABLE')),'T','-v7.3');
+save(fullfile(defs.FileNames('DIR'),defs.FileNames('MASK_TABLE')),'T','-v7.3');
 data.mask = T; clear T;
 toc(maintic);
 
 %% Export spike rates table using same bins as Mask & LFP data
 data.raw_spikes = loadSpikeSeries_Table(F);
 T = compute_binned_FR(data.raw_spikes);
-save(fullfile(dataTank,defs.FileNames('SPIKE_SERIES_BINNED_TABLE')),'T','-v7.3');
+save(fullfile(defs.FileNames('DIR'),...
+   defs.FileNames('SPIKE_SERIES_BINNED_TABLE')),'T','-v7.3');
 data.binned_spikes = T; clear T;
 T = compute_delta_FR(data.binned_spikes);
-save(fullfile(dataTank,defs.FileNames('SPIKE_SERIES_DELTA_TABLE')),'T','-v7.3');
+save(fullfile(defs.FileNames('DIR'),...
+   defs.FileNames('SPIKE_SERIES_DELTA_TABLE')),'T','-v7.3');
 data.delta_spikes = T; clear T;
 T = compute_epoch_LvR(data.raw_spikes);
-save(fullfile(dataTank,defs.FileNames('SPIKE_SERIES_LVR_TABLE')),'T','-v7.3');
+save(fullfile(defs.FileNames('DIR'),...
+   defs.FileNames('SPIKE_SERIES_LVR_TABLE')),'T','-v7.3');
 data.LvR = T; clear T;
 toc(maintic);
 
@@ -80,7 +82,7 @@ genRainCloudPlots(data.LvR,'TAG','LvR');
 % Export LvR stats
 % S = stats.make.LvRTable(data.LvR);
 % [rm,ranovatbl,A,C,D] = stats.fit.LvR_RM_Model(S);
-% save(fullfile(dataTank,defs.FileNames('LVR_RM_ANOVA_FILE')),...
+% save(fullfile(defs.FileNames('DIR'),defs.FileNames('LVR_RM_ANOVA_FILE')),...
 %       'S','rm','ranovatbl','A','C','D','-v7.3');
 
 % Export Exemplar panels

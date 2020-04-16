@@ -48,7 +48,11 @@ opts = setvaropts(opts, ["BlockID", "Var4"], "EmptyFieldRule", "auto");
 
 % Import the data
 T = readtable(filename, opts);
-T = movevars(T, 'BlockID', 'Before', 'AnimalID');
+iMove = find(strcmp(T.Properties.VariableNames,'BlockID'),1,'first');
+iBefore = find(strcmp(T.Properties.VariableNames,'AnimalID'),1,'first');
+nCol = size(T,2); % movevar not present in R2017a
+T = T(:,[setdiff(1:(iBefore-1),iMove), iMove, setdiff(iBefore:nCol,iMove)]);
+
 % Make sure formatting is correct
 T = fixChannelIDs(T);
 T = fixConditionIDs(T);

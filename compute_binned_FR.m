@@ -32,28 +32,45 @@ pars = parseParameters('Spikes',varargin{:});
 
 % Iterate if it is a table
 subtic = tic;
-N = size(T,1);
+nRows = size(T,1);
 h = waitbar(0,'Binning for spike rates...');
-for i = 1:N
+N = nan(nRows,1);
+for i = 1:nRows
    samples_per_bin = round(T.FS(i) * pars.DS_BIN_DURATION); 
    n = histcounts(find(T.Train{i}),1:samples_per_bin:size(T.Train{i},1));
    FR = n ./ pars.DS_BIN_DURATION;      % Scale to spikes per second
    T.Train{i} = FR(1:numel(T.mask{i})); % Make sure it's the correct length
-   T.Cluster(i) = samples_per_bin;
-   waitbar(i/N);
+   N(i) = samples_per_bin;
+   waitbar(i/nRows);
 end
 delete(h);
-trainVarIndex = strcmp(T.Properties.VariableNames,'Train');
+
 clusterVarIndex = strcmp(T.Properties.VariableNames,'Cluster');
+T(:,clusterVarIndex) = []; % Remove "Cluster" variable
+
+% Fix name of "Train" variable
+trainVarIndex = strcmp(T.Properties.VariableNames,'Train');
 T.Properties.VariableNames{trainVarIndex} = 'Rate';
-T.Properties.VariableNames{clusterVarIndex} = 'N';
+T = [T, table(N)];
+
+iMove = find(strcmp(T.Properties.VariableNames,'N'),1,'first');
+iBefore = find(strcmp(T.Properties.VariableNames,'Rate'),1,'first');
+nCol = size(T,2); % movevar not present in R2017a
+T = T(:,[setdiff(1:(iBefore-1),iMove), iMove, setdiff(iBefore:nCol,iMove)]);
+
 T.Properties.Description = ...
    ['Binned Multi-unit activity ' newline ...
     '`Rate` is a "decimated" signal with # of multi-unit spikes in bin'];
-T.Properties.VariableDescriptions{2} = 'Channel: Recording microwire channel';
-T.Properties.VariableDescriptions{3} = 'N: Number of samples per bin';
-T.Properties.VariableDescriptions{4} = 'Rate: Spikes per second';
-T.Properties.VariableDescriptions{5} = 'FS: Sample rate of original record';
+idx = strcmp(T.Properties.VariableNames,'Channel');
+T.Properties.VariableDescriptions{idx} = 'Channel: Recording microwire channel';
+idx = strcmp(T.Properties.VariableNames,'N');
+T.Properties.VariableDescriptions{idx} = 'N: Number of samples per bin';
+idx = strcmp(T.Properties.VariableNames, 'Rate');
+T.Properties.VariableDescriptions{idx} = 'Rate: Spikes per second';
+idx = strcmp(T.Properties.VariableNames,'FS');
+T.Properties.VariableDescriptions{idx} = 'FS: Sample rate of original record';
+
+
 T.Properties.UserData = pars; % Save parameters with smaller table
 fprintf(1,'\t->\t');
 toc(subtic);

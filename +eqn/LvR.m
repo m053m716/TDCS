@@ -20,9 +20,8 @@ function LvR_out = LvR(t,R)
 %  Differentiation of Cerebral Cortex.' Shinomoto et al. (2009)
 
 % Parameters
-if nargin < 2
-   R = 0.0015;          %Refractoriness (s)
-end
+%Default
+R = 0.005;          %Refractoriness (s)
 
 % Fix dimension of t
 t = reshape(t,1,numel(t));
