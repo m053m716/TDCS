@@ -195,9 +195,9 @@ end
       sneo.t = in.t(vec);
       sneo.fs = in.filt.fs;
       spike.pars = in.spike.pars; 
-      
+      fd = in.filt.data(bvec);
       [~,spike.peakIndices,spike.peakValues,~,~,sneo.data,thresh] = ...
-         eqn.SNEO_Threshold(in.filt.data(bvec),spike.pars,[]);
+         eqn.SNEO_Threshold(fd,spike.pars,[]);
       
       % Fix apparent time offset from shortened vector
       spike.peakIndices = spike.peakIndices + bvec(1) - 1;
@@ -214,6 +214,11 @@ end
       spike.peakIndices = spike.peakIndices(spike_index);
       spike.peakTimes = spike.peakTimes(spike_index);
       spike.peakValues = spike.peakValues(spike_index);
+      idx = spike.peakIndices.' - bvec(1) + 1;
+      snipIndices = ones(numel(idx),31) .* (-10:20) + idx;
+      snipIndices(any(snipIndices <= 0,2),:) = [];
+      snipIndices(any(snipIndices >= numel(fd),2),:) = [];
+      spike.snips = fd(snipIndices);
       spike.threshold = thresh.data;
       
    end
@@ -267,7 +272,7 @@ end
       filt = repmat(filt,n,1);
       sneo = struct('data',[],'t',[],'fs',[],'threshold',[]); 
       sneo = repmat(sneo,n,1);
-      spike = struct('peakIndices',[],'peakTimes',[],'peakValues',[],'threshold',[],'pars',struct);  
+      spike = struct('snips',[],'peakIndices',[],'peakTimes',[],'peakValues',[],'threshold',[],'pars',struct);  
       spike = repmat(spike,n,1);
    end
 
