@@ -1,4 +1,4 @@
-function [data,F] = loadDataStruct(dataTank,varargin)
+function data = loadDataStruct(dataTank,varargin)
 %LOADDATASTRUCT  Loads `data` struct as defined in `main.m`
 %
 %  data = loadDataStruct();
@@ -7,9 +7,6 @@ function [data,F] = loadDataStruct(dataTank,varargin)
 %  data = loadDataStruct(dataTank,'NAME',value,...);
 %  --> Specify `dataTank` as char array of folder where data lives
 %  --> Defaults for 'NAME' value pairs are from `+defs.FileNames.m`
-%
-%  [data,F] = ...
-%  --> Load `F` which is the organization struct array with file info
 %  
 %  See also: main.m, loadOrganizationData.m
 
@@ -26,6 +23,9 @@ pars = parseParameters('FileNames',varargin{:});
 % Make data structure and begin loading data
 data = struct;
 loadingTic = tic;
+
+% Load organization file data
+[data.F,~,data.E] = loadOrganizationData();
 
 % Load raw spike train data table
 data.raw_spikes = loadFunction(dataTank,...
@@ -47,10 +47,6 @@ data.LvR = loadFunction(dataTank,...
 data.LFP = loadFunction(dataTank,...
    pars.LFP_TABLE,{'LFP'},'LFP data');
 
-% Load organization data (if requested) and print total load time
-if nargout > 1
-   F = loadOrganizationData();
-end
 toc(loadingTic);
 
    % Helper functions

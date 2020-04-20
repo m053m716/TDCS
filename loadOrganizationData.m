@@ -24,16 +24,20 @@ function [F,pars,E] = loadOrganizationData(varargin)
 %
 %  E  : Data table for STIM epoch start/stop times (minutes)
 
+fprintf(1,'Loading organization struct array...');
 pars = parseParameters('FileNames',varargin{:});
 
 in = load(fullfile(pars.DIR,pars.DATA_STRUCTURE),'F');
 F = in.F([in.F.included] &...
           ~isnan([in.F.animalID]) & ...
           ~isnan([in.F.conditionID]));
-       
+fprintf(1,'complete\n');    
 if nargout > 2
+   fprintf(1,'Loading stimulation epoch times table...');
    in = load(fullfile(pars.DIR,pars.STIM_EPOCH_TABLE),'E');
    E = in.E;
+   fprintf(1,'complete\n');
 end
+
 
 end

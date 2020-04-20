@@ -44,8 +44,11 @@ end
 maintic = tic;
 Name = {F.name}.';
 AnimalID = [F.animalID].';
+AnimalID = categorical(AnimalID);
 ConditionID = ceil([F.conditionID].'/2);
+ConditionID = ordinal(ConditionID,{'0.0 mA','0.2 mA','0.4 mA'},[1 2 3]);
 CurrentID = [F.currentID].';
+CurrentID = categorical(CurrentID,{'Anodal','Cathodal'},[-1 1]);
 
 N = numel(F);
 data = cell(N,1);
@@ -56,8 +59,20 @@ for i = 1:N
    [data{i},fs(i)] = loadDS_Data(Name{i},pars.DIR);
    waitbar(i/N,h);
 end
-T = table(Name,AnimalID,ConditionID,CurrentID,data,fs);
+BlockID = convertName2BlockID(Name);
+BlockID = categorical(BlockID);
+T = table(BlockID,AnimalID,ConditionID,CurrentID,data,fs);
 delete(h);
+p = defs.LFP('EPOCH_NAMES','EPOCH_ONSETS',...
+   'EPOCH_OFFSETS','BANDS',...
+   'FC','WLEN',...
+   'FREQS','DESCRIPTION');
+p.WIN_OVERLAP = 0; % Hard-coded
+p.FS = defs.Experiment('FS_DECIMATED');
+T.Properties.UserData = p;
+T = setTableOutcomeVariable(T,'Mean','');
+T.Properties.UserData.TABLE_TYPE = 'DS';
+
 toc(maintic);
 
 end

@@ -155,6 +155,10 @@ for i = 1:nBand
       SD(iRow) = std(p_mu(t_idx));
    end
 end
+BandID = categorical(BandID,...
+   [1,2,3,4,5,6],...
+   {'Delta','Theta','Alpha','Beta','Low Gamma','High Gamma'}...
+   );
 LFP = table(BlockID,AnimalID,ConditionID,CurrentID,EpochID,BandID,...
    Mean,Median,NSamples,SD);
 LFP.Properties.Description = ...
@@ -174,6 +178,7 @@ LFP.Properties.VariableDescriptions = ...
    };
 LFP.Properties.UserData = p; % Store parameters
 LFP = setTableOutcomeVariable(LFP,'Mean');
+LFP.Properties.TABLE_TYPE = 'LFP';
 
 BlockID = BlockID(1:nEpoch);
 AnimalID = AnimalID(1:nEpoch);
@@ -206,6 +211,7 @@ S.Properties.VariableDescriptions = ...
    };
 S.Properties.UserData = p;
 S = setTableOutcomeVariable(S,'Spectrum_Mean');
+S.Properties.UserData.TABLE_TYPE = 'LFP_Spectrum';
 fprintf(1,'\b\b\b\b\b\b\b\b\b\b\b\b<strong>complete</strong>\n');
 
    function p = reduceParameters(pars,fs)
