@@ -9,14 +9,13 @@ function varargout = Panelized_Rate_Figure(varargin)
 pars = struct;
 [pars.DIR,pars.FNAME] = ...
    defs.FileNames('OUTPUT_FIG_DIR','PANEL_RATE_FIGURE_NAME');
-[pars.POL_ID,pars.NAME,pars.COLORS,...
-   pars.EPOCH_COL_FACTOR,pars.EPOCH_NAMES,...
+[pars.NAME,pars.COLORS,pars.EPOCH_NAMES,...
+   pars.EPOCH_ONSETS,pars.EPOCH_OFFSETS,...
    pars.CONDITION_NAMES,pars.BIN_WIDTH] = ...
-      defs.Experiment('CURRENT_ID','NAME_KEY',...
-         'CONDITION_CUR_COL','EPOCH_COL_FACTOR','EPOCH_NAMES',...
+      defs.Experiment('NAME_KEY','CONDITION_CUR_COL','EPOCH_NAMES',...
+         'EPOCH_ONSETS','EPOCH_OFFSETS',...
          'NAME_KEY_MAT','DS_BIN_DURATION');
 pars.DIR = fullfile(pars.DIR,'Panelized-Rate-Changes');
-pars.TAG = ''; % For file naming
 pars.FIG_POS = [0.15 0.2 0.35 0.70];
 
 % Plotting parameters: `gfx__.plotWithShadedError`
@@ -47,7 +46,7 @@ pars.SIG_COLOR     = [0 0 0];   % Black
 pars.SIG_LINEJOIN  = 'chamfer'; % 'chamfer','miter','round' are options
 pars.SIG_Y_BRACKET = 65;
 pars.SIG_Y_TICK =    61;  
-pars.SIG_SHOW_PROBABILITY = true;
+pars.SIG_SHOW_PROBABILITY = false;
 pars.SIG_TEST = @alltests; % @ttest2 | @kstest2 | @ranksumtest | @adtest2 |@alltests
 pars.SIG_STR = 'Significant (''%s''|\\alpha = %s)';
 % For replications selection:
@@ -59,17 +58,20 @@ pars.YLIM = [-50 100];
 pars.YTICK = [-50 -25 0 25 50];
 pars.YTICKLABELS = {'-50','','0','','50'};
 pars.AX_FONT_SIZE = 10; % Needs to be smaller than usual
-pars.LABEL_HEIGHT = 15; % Height of epoch labels (data units)
-pars.LABEL_FIXED_Y = -50;
+pars.EPOCH_LABELS = defs.EpochLabels();
+pars.EPOCH_LABELS.LABEL_HEIGHT = 15; % Height of epoch labels (data units)
+pars.EPOCH_LABELS.LABEL_FIXED_Y = -50;
+pars.EPOCH_LABELS.ADD_EPOCH_DELIMITER_LINES = false;
 
-pars.ADD_EPOCH_DELIMITER_LINES = false;
 pars.YLABEL = '\Delta \surd (FR)';
 pars.XLABEL = 'Time (min)';
-pars.XTICK = [5 15 20 35 40 50];
-pars.XMINORTICK = [5 15 40 55];
+pars.XMINORTICK = [5 15 20 35 40 50];
+pars.XTICK = [17.5 37.5];
 pars.MAX_T_VAL_MINS = 120;
 pars.LABEL_TEXT_COL = [0 0 0]; % Color of text on epoch labels
 pars.RECTIFY = false; % Setting to true auto-changes other settings
+
+pars.TAG = ''; % For file naming
 
 if nargin < 1
    varargout = {pars};   

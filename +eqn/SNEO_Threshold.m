@@ -1,7 +1,9 @@
-function [p2pamp,ts_index,pmin,dt,E,Zs,thresh] = SNEO_Threshold(data,pars,art_idx)
+function [p2pamp,ts_index,pmin,dt,E,Zs,thresh] = SNEO_Threshold(data,pars,art_idx,threshOnly)
 %SNEO_THRESHOLD   Smoothed nonlinear energy operator thresholding detect
 %
-%  [p2pamp,ts_index,pmin,dt,E,Zs,thresh] = SNEO_THRESHOLD(data,pars,art_idx)
+%  [p2pamp,ts_index,pmin,dt,E,Zs,thresh] = eqn.SNEO_Threshold(data,pars,art_idx)
+%  [~,~,~,~,~,~,thresh] = eqn.SNEO_Threshold(data,pars,art_idx,threshOnly);
+%  --> By default, threshOnly is set to false
 %
 %   --------
 %    INPUTS
@@ -19,6 +21,8 @@ function [p2pamp,ts_index,pmin,dt,E,Zs,thresh] = SNEO_Threshold(data,pars,art_id
 %    art_idx   :        Indexing vector for artifact rejection periods,
 %                       which are temporarily removed so that thresholds
 %                       are not underestimated.
+%
+%  threshOnly  :        Set to true to only return `thresh` struct
 %
 %   --------
 %    OUTPUT
@@ -42,6 +46,10 @@ function [p2pamp,ts_index,pmin,dt,E,Zs,thresh] = SNEO_Threshold(data,pars,art_id
 %                                      minimum peak height. Corresponds to
 %                                      NEGATIVE version of signal (only
 %                                      looking for negative-going peaks).
+
+if nargin < 4
+   threshOnly = false;
+end
 
 if nargin < 3
    art_idx = [];
@@ -75,12 +83,12 @@ thresh.data = pars.MULTCOEFF * median(abs(tmpdata));
 % PERFORM THRESHOLDING
 pk = Zs > thresh.sneo;
 
-if sum(pk) <= 1
+if (sum(pk) <= 1) || (threshOnly)
    p2pamp = [];
    ts_index = [];
    pmin = [];
    dt = [];
-   return
+   return   
 end
 
 % REDUCE CONSECUTIVE CROSSINGS TO SINGLE POINTS

@@ -1,4 +1,4 @@
-function [fig,y,h0,y_test,h0_test,t] = genSpikeRatePanelFigure(T,varargin)
+function [fig,y,t] = genSpikeRatePanelFigure(T,varargin)
 %GENSPIKERATEPANELFIGURE Generate panelized spike rate change figure
 %
 %  fig = genSpikeRatePanelFigure(T);
@@ -21,10 +21,6 @@ function [fig,y,h0,y_test,h0_test,t] = genSpikeRatePanelFigure(T,varargin)
 %
 %  h0    :     Cell array of null-hypotheses for significance testing
 %
-%  y_test  :   Transformed `y` values for normalized testing
-%
-%  h0_test :   Transformed `h0` values for normalized testing
-%
 %  t : Times corresponding to columns of y or h0 (or tests)
 
 % Parse input
@@ -41,14 +37,16 @@ fig = figure(...
 
 % Initialize data
 nEpoch = numel(pars.EPOCH_NAMES);
-vec = getEpochSampleIndices(T,1:nEpoch);
+vec = getEpochSampleIndices(T,1:nEpoch,...
+   'EPOCH_ONSETS',pars.EPOCH_ONSETS,...
+   'EPOCH_OFFSETS',pars.EPOCH_OFFSETS);
 vv = vec(1,:);
 iStart = min(cellfun(@min,vec(:,1)));
 iStop = max(cellfun(@max,vec(:,3)));
 vec = iStart:iStop;
 
-t  = (pars.BIN_WIDTH/2):pars.BIN_WIDTH:(pars.MAX_T_VAL_MINS * 60); % Frequencies on x-axis
-t = t(vec) ./ 60; % Convert back into minutes
+t  = (pars.BIN_WIDTH/120):(pars.BIN_WIDTH/60):pars.MAX_T_VAL_MINS; % Frequencies on x-axis
+t = t(vec); % Convert back into minutes
 y  = cell(pars.N_INTENSITY,pars.N_POLARITY); % Cell array for test data
 h0 = cell(pars.N_INTENSITY,pars.N_POLARITY); % Cell array for "null-hypothesis" (sham) data
 % data = cellfun(@(C1)sqrt(C1(vec)),T.Rate,'UniformOutput',false);
@@ -56,9 +54,6 @@ mask = cellfun(@(C1)C1(vec),T.mask,'UniformOutput',false);
 
 % data = cellfun(@(C1,C2)maskWithNaN(C1,C2),data,mask,'UniformOutput',false);
 % data = cell2mat(data);
-
-y_test = cell(size(y));
-h0_test = cell(size(h0));
 
 Z = cellfun(@(C1)C1(vec),T.delta_sqrt_Rate,'UniformOutput',false); 
 Z = cellfun(@(C1,C2)maskWithNaN(C1,C2),Z,mask,'UniformOutput',false);
@@ -69,17 +64,22 @@ ax = ui__.panelizeAxes(fig,pars.N_INTENSITY,pars.N_POLARITY);
 ax = flipud(ax); % Put the "top" axes at the "top" of the array
 sigName = sprintf(pars.SIG_STR,char(pars.SIG_TEST),pars.ALPHA);
 
+uPolarity = unique(T.CurrentID);
+uIntensity = unique(T.ConditionID);
+
 for iRow = 1:pars.N_INTENSITY
    for iCol = 1:pars.N_POLARITY
       % Make sure axes "Hold" is on
       ax(iRow,iCol).NextPlot = 'add';
       
       % Get indexing of effect and control groups
-      iEffect = (T.CurrentID==pars.POL_ID(iCol)) & (T.ConditionID==iRow);
+      iEffect = (T.CurrentID==uPolarity(iCol)) & ...
+         (T.ConditionID==uIntensity(iRow));
       if pars.AGGREGATE_SHAM
-         iControl = (T.ConditionID == 1); 
+         iControl = (T.ConditionID == uIntensity(1)); 
       else
-         iControl = (T.ConditionID == 1) & (T.CurrentID==pars.POL_ID(iCol));
+         iControl = (T.ConditionID == uIntensity(1)) & ...
+            (T.CurrentID==uPolarity(iCol));
       end
 
       % Aggregate data for significance bar and to return it if needed
@@ -108,12 +108,12 @@ for iRow = 1:pars.N_INTENSITY
 %       ytrans = arcsine_pct(y{iRow,iCol});
 %       h0trans = arcsine_pct(h0{iRow,iCol});
       
-      y_test{iRow,iCol} = math__.whitenSeries(ytrans,...
-         pars.WHITEN_W,pars.WHITEN_OVERLAP).*...
-         nanstd(ytrans,0,2) + nanmean(ytrans,2);
-      h0_test{iRow,iCol} = math__.whitenSeries(h0trans,...
-         pars.WHITEN_W,pars.WHITEN_OVERLAP).*...
-         nanstd(h0trans,0,2) + nanmean(h0trans,2);
+%       y_test{iRow,iCol} = math__.whitenSeries(ytrans,...
+%          pars.WHITEN_W,pars.WHITEN_OVERLAP).*...
+%          nanstd(ytrans,0,2) + nanmean(ytrans,2);
+%       h0_test{iRow,iCol} = math__.whitenSeries(h0trans,...
+%          pars.WHITEN_W,pars.WHITEN_OVERLAP).*...
+%          nanstd(h0trans,0,2) + nanmean(h0trans,2);
       [cb,mu] = math__.mat2cb(y{iRow,iCol},1,sd_coeff);
       
       % 1) Plot indicator of dispersion of deltas. 
@@ -160,11 +160,9 @@ for iRow = 1:pars.N_INTENSITY
             'Parent',fig);
       end
       c = repmat(pars.COLORS{iRow,iCol},numel(pars.EPOCH_NAMES),1);
-      addEpochLabelsToAxes(ax(iRow,iCol),...
-         'LABEL_HEIGHT',pars.LABEL_HEIGHT,...
-         'LABEL_FIXED_Y',pars.LABEL_FIXED_Y,...
-         'ADD_EPOCH_DELIMITER_LINES',pars.ADD_EPOCH_DELIMITER_LINES,...
-         'EPOCH_COL',c);
+      epoc_pars = pars.EPOCH_LABELS;
+      epoc_pars.EPOCH_COL = c;
+      addEpochLabelsToAxes(ax(iRow,iCol),pars.EPOCH_LABELS);
       % Now that axes limits are set, add significance line
       if pars.SIG_SHOW_PROBABILITY
          for iEpoch = 1:nEpoch
@@ -270,6 +268,9 @@ end
          pars.YLIM = [-66 66];
          pars.LABEL_FIXED_Y = -66;
       end
+      pars.EPOCH_LABELS.EPOCH_ONSETS = pars.EPOCH_ONSETS;
+      pars.EPOCH_LABELS.EPOCH_OFFSETS = pars.EPOCH_OFFSETS;
+      pars.EPOCH_LABELS.EPOCH_NAMES = pars.EPOCH_NAMES;
    end
 
    function z = logit_pct(p)
