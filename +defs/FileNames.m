@@ -30,6 +30,8 @@ pars.SUMMARY_TAG = '_SpikeSummary.mat';   % Spike summary file ID
 pars.STIM_EPOCH_TIMES_FILE = '_StimEpochTimes.mat';
 
 % Specific Tables/Files
+pars.SUPP_MAT_TABLE = 'Supplementary_Recordings_Table.mat';
+pars.SUPP_CSV_TABLE = 'Supplementary_Recordings_Table.csv';
 pars.RMS_MASK_FILE = '%s_RMS-Mask_30-sec.mat';
 pars.LFP_FILE = '%s_LFP.mat';
 pars.LFP_STATS_FILE = 'LFP_BandPower_Stats';

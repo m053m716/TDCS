@@ -25,8 +25,8 @@ function T = supplemental_table(binned_spikes,lvr,F)
 %                 parameters from the recording
 
 if nargin < 1
-   data = loadDataStruct();
-   T = make.summary.supplemental_table(data);
+   d = loadDataStruct();
+   T = make.summary.supplemental_table(d.binned_spikes,d.LvR,d.F);
    return;
 end
 
@@ -83,16 +83,40 @@ Date = base2date(F.base);
 S = dir(fullfile(F.block,[F.base '_FilteredCAR'],'*FiltCAR_P*.mat'));
 thresh = struct('sneo',cell(Channels,1),'data',cell(Channels,1));
 pars = struct('SNEO_N',5,'MULTCOEFF',4.5,'NS_AROUND',7,'PLP',20); % Defaults
-for i = 1:numel(S)
-   in = load(fullfile(S(i).folder,S(i).name),'data');
-   [~,~,~,~,~,~,thresh(i)] = eqn.SNEO_Threshold(in.data,pars,[],true);
+T = 15:30:((numel(binned_spikes.mask{1})-1)*30 + 15); % seconds
+idx = find(~binned_spikes.mask{1} & (T > 300),1,'first');
+sampleIndex = T(idx) * fs;
+sampleVec = (sampleIndex-(5*fs)):(sampleIndex+(5*fs)); % Only use 10 seconds of data to compute
+
+nFiles = numel(S);
+h = waitbar(0,sprintf('[%s]: Extracting spike thresholds...',Name));
+for i = 1:nFiles
+   in = matfile(fullfile(S(i).folder,S(i).name));
+   x = in.data(1,sampleVec);
+   [~,msgid] = lastwarn;
+   if strcmp(msgid,'MATLAB:MatFile:OlderFormat')
+      data = in.data(1,:);
+      fs = in.fs;
+      clear in;
+      save(fullfile(S(i).folder,S(i).name),'data','fs','-v7.3');
+      % Update last warning ID
+      lastwarn(sprintf([...
+         '\n\t->\t<strong>[''%s'']</strong>: ' ...
+         'File updated with -v7.3 flag.'],...
+         fullfile(S(i).folder,S(i).name)),...
+         'TDCS:load:fixedSaveVersion');
+   end
+   [~,~,~,~,~,~,thresh(i)] = eqn.SNEO_Threshold(x,pars,[],true);
+   waitbar(i/nFiles);
 end
+delete(h);
 save(fullfile(F.block,[F.base '_SpikeThresholds.mat']),'thresh','-v7.3');
 avg_thresh_data = median([thresh.data]);
 avg_thresh_sneo = median([thresh.sneo]);
-
+Name = string(Name);
+Date = string(Date);
 T = table(Name,Date,Channels,fs,samples,avg_spikes,avg_lvr,avg_thresh_data,avg_thresh_sneo);
-T.Properties.Description = 'Recordings summary table';
+T.Properties.Description = 'Recordings summary table (all averages are median)';
 T.Properties.VariableDescriptions = {...
    'Name of recording',...
    'Date of recording',...

@@ -88,6 +88,7 @@ if (sum(pk) <= 1) || (threshOnly)
    ts_index = [];
    pmin = [];
    dt = [];
+   E = [];
    return   
 end
 
