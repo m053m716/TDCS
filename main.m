@@ -110,3 +110,16 @@ genLFPRainCloudPlots(data.LFP);
 % Export LFP Spectra figures (def. alpha = 0.05)
 genLFPSpectraPanelFigure(data.S,'SIG_SHOW_PROBABILITY',true); 
 genLFPSpectraPanelFigure(data.S,'SIG_SHOW_PROBABILITY',false);
+
+%% Export supplementary data table
+if ~exist('data','var')
+   data = loadDataStruct();
+end
+T = make.summary.supplemental_table(data.binned_spikes,data.LvR,data.F);
+save(fullfile(defs.FileNames('DIR'),defs.FileNames('SUPP_MAT_TABLE')),'T','-v7.3');
+
+%% Export LvR statistics table
+T = make.lvr.statistics_table(data.LvR);
+writetable(T,...
+   fullfile(defs.FileNames('DIR'),...
+   defs.FileNames('LVR_STATISTICS_CSV_TABLE')));

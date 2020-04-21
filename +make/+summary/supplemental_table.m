@@ -6,6 +6,12 @@ function T = supplemental_table(binned_spikes,lvr,F)
 %
 %  T = make.summary.supplemental_table(binned_spikes,lvr,F);
 %
+%  e.g.
+%  ```
+%     d = loadDataStruct();
+%     T = make.summary.supplemental_table(d.binned_spikes,d.LvR,d.F);
+%  ```
+%
 %  --------
 %   INPUTS
 %  --------

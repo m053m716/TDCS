@@ -61,7 +61,7 @@ pars.PANEL_RATE_FIGURE_NAME = 'Spike Rate Panelized Changes';
 pars.LFP_TABLE = '2020-03-25_LFP-Table.mat';
 pars.LFP_SPREADSHEET = '2020-03-25_LFP-Table.csv';
 pars.LVR_RM_ANOVA_FILE = '2020-04-07_RM-ANOVA-LvR.mat'; % Results of stats.fit.LvR_RM_Model
-
+pars.LVR_STATISTICS_CSV_TABLE = 'LvR Normalized Differences.csv';
 
 % Deprecated
 pars.OUTPUT_STATS_DIR_CSV = 'J:\Rat\tDCS\2020_Stats';
