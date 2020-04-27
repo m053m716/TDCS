@@ -62,6 +62,10 @@ pars.LFP_TABLE = '2020-03-25_LFP-Table.mat';
 pars.LFP_SPREADSHEET = '2020-03-25_LFP-Table.csv';
 pars.LVR_RM_ANOVA_FILE = '2020-04-07_RM-ANOVA-LvR.mat'; % Results of stats.fit.LvR_RM_Model
 pars.LVR_STATISTICS_CSV_TABLE = 'LvR Normalized Differences.csv';
+pars.LVR_REDUCED_STATISTICS_CSV_TABLE = 'LvR Reduced Stats.csv';
+pars.SPIKE_STATISTICS_CSV_TABLE = 'Spike Stim Epoch Median SquareRoot Rates.csv';
+pars.SPIKE_REDUCED_STATISTICS_CSV_TABLE = 'Spike Reduced Median SquareRoot Rates.csv';
+pars.REDUCED_COMBINED_CSV_TABLE = 'Reduced Combined Stats.csv';
 
 % Deprecated
 pars.OUTPUT_STATS_DIR_CSV = 'J:\Rat\tDCS\2020_Stats';

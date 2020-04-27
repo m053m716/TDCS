@@ -16,13 +16,8 @@ end
 
 pars = parseParameters('Spikes',varargin{:});
 
-vec = getEpochSampleIndices(T,1:3,pars);
-sqrt_Rate_Pre = cellfun(@(x,m,v)sqrt(x(v(~m(v)))),...
-   T.Rate,T.mask,vec(:,1),'UniformOutput',false);
-sqrt_Rate_Stim = cellfun(@(x,m,v)sqrt(x(v(~m(v)))),...
-   T.Rate,T.mask,vec(:,2),'UniformOutput',false);
-sqrt_Rate_Post = cellfun(@(x,m,v)sqrt(x(v(~m(v)))),...
-   T.Rate,T.mask,vec(:,3),'UniformOutput',false);
+[sqrt_Rate_Pre,sqrt_Rate_Stim,sqrt_Rate_Post] = compute_epoch_FR(...
+   T,1:numel(pars.EPOCH_ONSETS),pars);
 
 subtic = tic;
 % sqRate = T.Rate;
